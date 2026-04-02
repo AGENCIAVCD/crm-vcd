@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { KeyRound, LockKeyhole, ShieldCheck } from "lucide-react";
 import {
   createBrowserSupabaseClient,
@@ -21,17 +21,20 @@ function sanitizeNextPath(nextPath: string | null) {
   return nextPath;
 }
 
-export function LoginForm() {
+type LoginFormProps = {
+  nextPath?: string | null;
+};
+
+export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const nextPath = useMemo(
-    () => sanitizeNextPath(searchParams.get("next")),
-    [searchParams],
+    () => sanitizeNextPath(nextPathProp ?? null),
+    [nextPathProp],
   );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -183,4 +186,3 @@ export function LoginForm() {
     </main>
   );
 }
-
