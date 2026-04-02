@@ -33,6 +33,34 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local agent/skill installs
+.agents/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.crush/
+.factory/
+.goose/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.windsurf/
+.zencoder/
+/skills/
+/skills-lock.json
+
 # vercel
 .vercel
 
