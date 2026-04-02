@@ -1,13 +1,35 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Clock3, DatabaseZap, Target, TrendingUp } from "lucide-react";
-import { DEMO_PIPELINE_ID, getDemoBoardColumns } from "@/lib/demo-data";
+import { getAuthenticatedAppUser, createServerSupabaseClient } from "@/lib/supabase-auth";
 import { formatCurrency, getLeadSlaState } from "@/lib/utils";
 
-export default function DashboardPage() {
-  const pipelineId =
-    process.env.NEXT_PUBLIC_DEFAULT_PIPELINE_ID ?? DEMO_PIPELINE_ID;
-  const columns = getDemoBoardColumns(pipelineId);
-  const leads = columns.flatMap((column) => column.leads);
+const LEAD_STATS_SELECT = "id, value, last_interaction_at";
+
+export default async function DashboardPage() {
+  const authenticatedUser = await getAuthenticatedAppUser();
+
+  if (!authenticatedUser) {
+    redirect("/login");
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const pipelineId = process.env.NEXT_PUBLIC_DEFAULT_PIPELINE_ID;
+  let leads: Array<{
+    id: string;
+    value: number | null;
+    last_interaction_at: string | null;
+  }> = [];
+
+  if (supabase) {
+    const { data } = await supabase
+      .from("leads")
+      .select(LEAD_STATS_SELECT)
+      .eq("tenant_id", authenticatedUser.profile.tenant_id);
+
+    leads = data ?? [];
+  }
+
   const totalValue = leads.reduce((sum, lead) => sum + Number(lead.value ?? 0), 0);
   const criticalCount = leads.filter(
     (lead) => getLeadSlaState(lead.last_interaction_at) === "critical",
@@ -64,25 +86,26 @@ export default function DashboardPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent-soft px-3 py-1 text-xs font-semibold tracking-[0.2em] text-accent uppercase">
               <DatabaseZap className="size-3.5" />
-              Dogfooding pronto
+              Area autenticada
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">
-              Estrutura inicial do VCD-CRM pronta para ligar no Supabase
+              CRM protegido por sessao e pronto para uso interno da agencia
             </h2>
             <p className="mt-3 text-sm leading-6 text-muted">
-              O projeto ja nasce com Provider de autenticacao, webhook de
-              inbound, migration SQL com RLS e um Kanban com `dnd-kit` +
-              Realtime para acelerar o hackathon.
+              O acesso ao dashboard agora depende de login valido. As metricas
+              abaixo refletem somente os dados do tenant autenticado.
             </p>
           </div>
 
-          <Link
-            href={`/pipelines/${pipelineId}`}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
-          >
-            Abrir pipeline
-            <ArrowRight className="size-4" />
-          </Link>
+          {pipelineId ? (
+            <Link
+              href={`/pipelines/${pipelineId}`}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
+            >
+              Abrir pipeline
+              <ArrowRight className="size-4" />
+            </Link>
+          ) : null}
         </div>
       </article>
     </section>

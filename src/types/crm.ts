@@ -22,7 +22,6 @@ export interface AuthContextValue {
   user: User | null;
   profile: AppUserProfile | null;
   tenantId: string | null;
-  isDemo: boolean;
   isLoading: boolean;
   refreshProfile: () => Promise<void>;
 }

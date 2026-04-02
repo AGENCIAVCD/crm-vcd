@@ -8,19 +8,10 @@ import {
   useState,
 } from "react";
 import type { AuthContextValue, AppUserProfile } from "@/types/crm";
-import { DEMO_TENANT_ID } from "@/lib/demo-data";
 import {
   createBrowserSupabaseClient,
   isSupabaseConfigured,
 } from "@/lib/supabase-client";
-
-const DEMO_PROFILE: AppUserProfile = {
-  id: "60000000-0000-4000-8000-000000000001",
-  tenant_id: DEMO_TENANT_ID,
-  full_name: "Bruno Ravaglia",
-  role: "admin",
-  email: "bruno@vcdigital.com.br",
-};
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -32,15 +23,13 @@ export function AuthProvider({
   const [user, setUser] = useState<AuthContextValue["user"]>(null);
   const [profile, setProfile] = useState<AuthContextValue["profile"]>(null);
   const [tenantId, setTenantId] = useState<string | null>(null);
-  const [isDemo, setIsDemo] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   async function refreshProfile() {
     if (!isSupabaseConfigured()) {
       setUser(null);
-      setProfile(DEMO_PROFILE);
-      setTenantId(DEMO_PROFILE.tenant_id);
-      setIsDemo(true);
+      setProfile(null);
+      setTenantId(null);
       setIsLoading(false);
       return;
     }
@@ -55,7 +44,6 @@ export function AuthProvider({
         setUser(null);
         setProfile(null);
         setTenantId(null);
-        setIsDemo(false);
         setIsLoading(false);
         return;
       }
@@ -74,15 +62,13 @@ export function AuthProvider({
       setProfile({
         ...userProfile,
         email: sessionUser.email,
-      });
+      } satisfies AppUserProfile);
       setTenantId(userProfile.tenant_id);
-      setIsDemo(false);
     } catch (error) {
       console.error("Falha ao carregar perfil do CRM:", error);
       setUser(null);
       setProfile(null);
       setTenantId(null);
-      setIsDemo(false);
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +103,6 @@ export function AuthProvider({
         user,
         profile,
         tenantId,
-        isDemo,
         isLoading,
         refreshProfile,
       }}

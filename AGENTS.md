@@ -20,6 +20,12 @@ Antes de qualquer acao no repositorio:
 
 Se o codigo mudar de forma relevante, este arquivo deve ser atualizado junto.
 
+Regra ativa de produto:
+
+- a primeira tela para visitantes deve ser `/login`
+- nenhuma rota de CRM pode ser acessada sem sessao valida
+- fallback demo nao deve liberar acesso a visitantes
+
 ## Product Goal
 
 Construir o `VCD-CRM`, um CRM SaaS multi-tenant ultrarrapido, inspirado em Kommo e ActiveCampaign.
@@ -95,9 +101,15 @@ Contexto atual:
 ### Authentication context
 
 - `AuthProvider` criado.
-- Suporta modo demo quando Supabase ainda nao esta configurado.
 - Quando Supabase estiver ativo, o provider le `auth.user` e busca o perfil em `public.users`.
-- O contexto exposto contem `user`, `profile`, `tenantId`, `isDemo`, `isLoading` e `refreshProfile`.
+- O contexto exposto contem `user`, `profile`, `tenantId`, `isLoading` e `refreshProfile`.
+
+### Access control
+
+- `src/proxy.ts` protege `/`, `/dashboard` e `/pipelines/*`.
+- `src/app/(crm)/layout.tsx` reforca o bloqueio no servidor.
+- `src/app/(auth)/login/page.tsx` redireciona usuarios autenticados para `/dashboard`.
+- Visitantes nao autenticados devem sempre cair em `/login`.
 
 ### Kanban
 
@@ -165,6 +177,7 @@ Contexto atual:
 - Toda tabela de dominio deve carregar `tenant_id`.
 - Toda query de leitura e escrita deve respeitar `tenant_id`.
 - Nenhuma tela pode misturar dados de tenants diferentes.
+- Nenhuma rota privada pode depender de fallback demo para autorizar acesso.
 - Nenhum componente client pode usar `SUPABASE_SERVICE_ROLE_KEY`.
 - `service role` so pode ser usado em rotas server-side, webhooks ou jobs controlados.
 - Se uma nova funcionalidade tocar dados de CRM, avaliar se precisa de RLS, indice e Realtime.

@@ -16,7 +16,6 @@ import { Activity, RadioTower, RefreshCw } from "lucide-react";
 import { Column } from "@/components/kanban/Column";
 import { LeadDetails } from "@/components/lead-modal/LeadDetails";
 import { useAuth } from "@/components/providers/auth-provider";
-import { DEMO_TENANT_ID } from "@/lib/demo-data";
 import { createBrowserSupabaseClient, isSupabaseConfigured } from "@/lib/supabase-client";
 import { cn } from "@/lib/utils";
 import type { BoardColumn, LeadRow, StageRow } from "@/types/crm";
@@ -27,6 +26,7 @@ type BoardProps = {
   initialColumns?: BoardColumn[];
 };
 
+const EMPTY_COLUMNS: BoardColumn[] = [];
 const STAGE_SELECT = "id, pipeline_id, tenant_id, name, position";
 const LEAD_SELECT =
   "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at";
@@ -124,15 +124,16 @@ function buildColumns(stages: StageRow[], leads: LeadRow[]) {
 export function Board({
   pipelineId,
   tenantId: tenantIdFromPage,
-  initialColumns = [],
+  initialColumns = EMPTY_COLUMNS,
 }: BoardProps) {
-  const { tenantId: tenantIdFromAuth, isDemo } = useAuth();
-  const tenantId = tenantIdFromAuth ?? tenantIdFromPage ?? DEMO_TENANT_ID;
-  const [columns, setColumns] = useState<BoardColumn[]>(initialColumns);
+  const { tenantId: tenantIdFromAuth } = useAuth();
+  const tenantId = tenantIdFromAuth ?? tenantIdFromPage ?? null;
+  const [columns, setColumns] = useState<BoardColumn[] | null>(null);
   const [selectedLead, setSelectedLead] = useState<LeadRow | null>(null);
   const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSyncedRealtime, setHasSyncedRealtime] = useState(false);
+  const visibleColumns = columns ?? initialColumns;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -235,12 +236,12 @@ export function Board({
       return;
     }
 
-    const freshLead = findLead(columns, selectedLead.id);
+    const freshLead = findLead(visibleColumns, selectedLead.id);
 
     if (freshLead && freshLead !== selectedLead) {
       setSelectedLead(freshLead);
     }
-  }, [columns, selectedLead]);
+  }, [selectedLead, visibleColumns]);
 
   async function persistStageChange(leadId: string, stageId: string) {
     if (!tenantId || !isSupabaseConfigured()) {
@@ -280,7 +281,7 @@ export function Board({
 
     const activeLeadId = String(event.active.id);
     const overId = String(event.over.id);
-    const sourceColumn = findLeadStage(columns, activeLeadId);
+    const sourceColumn = findLeadStage(visibleColumns, activeLeadId);
 
     if (!sourceColumn) {
       return;
@@ -296,7 +297,13 @@ export function Board({
       return;
     }
 
-    const nextColumns = moveLead(columns, activeLeadId, overId, overType, targetStageId);
+    const nextColumns = moveLead(
+      visibleColumns,
+      activeLeadId,
+      overId,
+      overType,
+      targetStageId,
+    );
     const targetColumn = findLeadStage(nextColumns, activeLeadId);
 
     if (!targetColumn) {
@@ -310,13 +317,14 @@ export function Board({
     }
   }
 
-  const activeLead = findLead(columns, activeLeadId);
-  const totalLeads = columns.reduce((sum, column) => sum + column.leads.length, 0);
-  const modeLabel = isSupabaseConfigured()
-    ? hasSyncedRealtime
-      ? "Realtime sincronizado"
-      : "Sincronizando Supabase"
-    : "Modo demo";
+  const activeLead = findLead(visibleColumns, activeLeadId);
+  const totalLeads = visibleColumns.reduce(
+    (sum, column) => sum + column.leads.length,
+    0,
+  );
+  const modeLabel = hasSyncedRealtime
+    ? "Realtime sincronizado"
+    : "Sincronizando Supabase";
 
   return (
     <>
@@ -340,9 +348,7 @@ export function Board({
             <span
               className={cn(
                 "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-medium",
-                isSupabaseConfigured()
-                  ? "border-brand/20 bg-brand-soft text-brand"
-                  : "border-accent/20 bg-accent-soft text-accent",
+                "border-brand/20 bg-brand-soft text-brand",
               )}
             >
               <RadioTower className="size-4" />
@@ -356,11 +362,6 @@ export function Board({
               <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
               Atualizar
             </button>
-            {isDemo ? (
-              <span className="rounded-full border border-line bg-white px-3 py-1.5 text-slate-500">
-                tenant demo ativo
-              </span>
-            ) : null}
           </div>
         </div>
 
@@ -374,7 +375,7 @@ export function Board({
                 void handleDragEnd(event);
               }}
             >
-              {columns.map((column) => (
+              {visibleColumns.map((column) => (
                 <Column
                   key={column.id}
                   column={column}

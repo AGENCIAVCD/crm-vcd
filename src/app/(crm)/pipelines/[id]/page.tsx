@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Board } from "@/components/kanban/Board";
-import { DEMO_PIPELINE_ID, DEMO_TENANT_ID, getDemoBoardColumns } from "@/lib/demo-data";
+import {
+  createServerSupabaseClient,
+  getAuthenticatedAppUser,
+} from "@/lib/supabase-auth";
+import type { BoardColumn, LeadRow, StageRow } from "@/types/crm";
 
 type PipelinePageProps = {
   params: Promise<{
@@ -7,10 +13,54 @@ type PipelinePageProps = {
   }>;
 };
 
+export const metadata: Metadata = {
+  title: "VCD-CRM | Pipeline",
+  description: "Kanban comercial protegido por autenticacao.",
+};
+
 export default async function PipelinePage({ params }: PipelinePageProps) {
+  const authenticatedUser = await getAuthenticatedAppUser();
+
+  if (!authenticatedUser) {
+    redirect("/login");
+  }
+
   const { id } = await params;
-  const pipelineId = id || DEMO_PIPELINE_ID;
-  const tenantId = process.env.NEXT_PUBLIC_DEFAULT_TENANT_ID ?? DEMO_TENANT_ID;
+  const pipelineId = id;
+  const tenantId = authenticatedUser.profile.tenant_id;
+  const supabase = await createServerSupabaseClient();
+
+  let initialColumns: BoardColumn[] = [];
+
+  if (supabase) {
+    const { data: stages } = await supabase
+      .from("stages")
+      .select("id, pipeline_id, tenant_id, name, position")
+      .eq("tenant_id", tenantId)
+      .eq("pipeline_id", pipelineId)
+      .order("position");
+
+    const stageIds = (stages ?? []).map((stage) => stage.id);
+    let leads: LeadRow[] = [];
+
+    if (stageIds.length > 0) {
+      const { data: loadedLeads } = await supabase
+        .from("leads")
+        .select(
+          "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at",
+        )
+        .eq("tenant_id", tenantId)
+        .in("stage_id", stageIds)
+        .order("last_interaction_at", { ascending: true });
+
+      leads = loadedLeads ?? [];
+    }
+
+    initialColumns = (stages ?? []).map((stage: StageRow) => ({
+      ...stage,
+      leads: leads.filter((lead) => lead.stage_id === stage.id),
+    }));
+  }
 
   return (
     <section className="space-y-4">
@@ -25,7 +75,7 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
               Drag and drop com atualizacao otimista, sincronizacao em tempo real
-              e fallback demo para acelerar o desenvolvimento.
+              e acesso restrito a usuarios autenticados.
             </p>
           </div>
           <p className="rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-slate-600">
@@ -35,9 +85,10 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
       </div>
 
       <Board
+        key={`${tenantId}:${pipelineId}`}
         pipelineId={pipelineId}
         tenantId={tenantId}
-        initialColumns={getDemoBoardColumns(pipelineId)}
+        initialColumns={initialColumns}
       />
     </section>
   );

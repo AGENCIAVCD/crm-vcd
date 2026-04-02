@@ -1,14 +1,21 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { BarChart3, LayoutDashboard, LogIn, Rows3 } from "lucide-react";
-import { DEMO_PIPELINE_ID } from "@/lib/demo-data";
+import { BarChart3, LayoutDashboard, Rows3 } from "lucide-react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import { getAuthenticatedAppUser } from "@/lib/supabase-auth";
 
-export default function CrmLayout({
+export default async function CrmLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pipelineId =
-    process.env.NEXT_PUBLIC_DEFAULT_PIPELINE_ID ?? DEMO_PIPELINE_ID;
+  const authenticatedUser = await getAuthenticatedAppUser();
+
+  if (!authenticatedUser) {
+    redirect("/login");
+  }
+
+  const pipelineId = process.env.NEXT_PUBLIC_DEFAULT_PIPELINE_ID;
 
   return (
     <div className="min-h-screen">
@@ -34,13 +41,17 @@ export default function CrmLayout({
               </div>
             </div>
 
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-brand/30 hover:text-brand"
-            >
-              <LogIn className="size-4" />
-              Entrar com Supabase Auth
-            </Link>
+            <div className="flex flex-col items-start gap-3 md:items-end">
+              <div className="rounded-2xl border border-line bg-white px-4 py-3 text-sm text-slate-700">
+                <p className="font-semibold text-slate-950">
+                  {authenticatedUser.profile.full_name}
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted">
+                  {authenticatedUser.profile.role}
+                </p>
+              </div>
+              <SignOutButton />
+            </div>
           </div>
 
           <nav className="flex flex-wrap gap-3 text-sm">
@@ -51,13 +62,15 @@ export default function CrmLayout({
               <LayoutDashboard className="size-4" />
               Dashboard
             </Link>
-            <Link
-              href={`/pipelines/${pipelineId}`}
-              className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2 font-medium text-slate-700 transition hover:border-brand/30 hover:text-brand"
-            >
-              <Rows3 className="size-4" />
-              Kanban Principal
-            </Link>
+            {pipelineId ? (
+              <Link
+                href={`/pipelines/${pipelineId}`}
+                className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2 font-medium text-slate-700 transition hover:border-brand/30 hover:text-brand"
+              >
+                <Rows3 className="size-4" />
+                Kanban Principal
+              </Link>
+            ) : null}
           </nav>
         </header>
 
