@@ -2,7 +2,6 @@
 
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { KeyRound, LockKeyhole, ShieldCheck } from "lucide-react";
 import {
   createBrowserSupabaseClient,
@@ -26,7 +25,6 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -62,8 +60,7 @@ export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
           return;
         }
 
-        router.replace(nextPath);
-        router.refresh();
+        window.location.assign(nextPath);
       } catch (error) {
         setFeedback(
           error instanceof Error ? error.message : "Nao foi possivel autenticar.",
