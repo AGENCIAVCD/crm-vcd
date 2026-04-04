@@ -3,10 +3,7 @@
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { KeyRound, LockKeyhole, ShieldCheck } from "lucide-react";
-import {
-  createBrowserSupabaseClient,
-  isSupabaseConfigured,
-} from "@/lib/supabase-client";
+import { isSupabaseConfigured } from "@/lib/supabase-client";
 
 function sanitizeNextPath(nextPath: string | null) {
   if (!nextPath) {
@@ -49,18 +46,31 @@ export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
 
     startTransition(async () => {
       try {
-        const supabase = createBrowserSupabaseClient();
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            nextPath,
+          }),
         });
 
-        if (error) {
-          setFeedback(error.message);
+        const payload = (await response.json().catch(() => null)) as
+          | {
+              error?: string;
+              redirectTo?: string;
+            }
+          | null;
+
+        if (!response.ok) {
+          setFeedback(payload?.error ?? "Nao foi possivel autenticar.");
           return;
         }
 
-        window.location.assign(nextPath);
+        window.location.assign(payload?.redirectTo ?? nextPath);
       } catch (error) {
         setFeedback(
           error instanceof Error ? error.message : "Nao foi possivel autenticar.",
