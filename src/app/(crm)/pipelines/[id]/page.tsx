@@ -35,7 +35,9 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
   if (supabase) {
     const { data: stages } = await supabase
       .from("stages")
-      .select("id, pipeline_id, tenant_id, name, position")
+      .select(
+        "id, pipeline_id, tenant_id, name, position, description, integration_enabled, integration_label, integration_webhook_url",
+      )
       .eq("tenant_id", tenantId)
       .eq("pipeline_id", pipelineId)
       .order("position");
@@ -44,11 +46,11 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
     let leads: LeadRow[] = [];
 
     if (stageIds.length > 0) {
-      const { data: loadedLeads } = await supabase
-        .from("leads")
-        .select(
-          "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at",
-        )
+        const { data: loadedLeads } = await supabase
+          .from("leads")
+          .select(
+            "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at, notes",
+          )
         .eq("tenant_id", tenantId)
         .in("stage_id", stageIds)
         .order("last_interaction_at", { ascending: true });

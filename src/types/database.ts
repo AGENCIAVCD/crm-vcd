@@ -73,6 +73,10 @@ export interface Database {
           tenant_id: string;
           name: string;
           position: number;
+          description: string | null;
+          integration_enabled: boolean;
+          integration_label: string | null;
+          integration_webhook_url: string | null;
         };
         Insert: {
           id?: string;
@@ -80,6 +84,10 @@ export interface Database {
           tenant_id: string;
           name: string;
           position: number;
+          description?: string | null;
+          integration_enabled?: boolean;
+          integration_label?: string | null;
+          integration_webhook_url?: string | null;
         };
         Update: {
           id?: string;
@@ -87,6 +95,10 @@ export interface Database {
           tenant_id?: string;
           name?: string;
           position?: number;
+          description?: string | null;
+          integration_enabled?: boolean;
+          integration_label?: string | null;
+          integration_webhook_url?: string | null;
         };
         Relationships: [];
       };
@@ -102,6 +114,7 @@ export interface Database {
           assigned_to: string | null;
           last_interaction_at: string | null;
           created_at: string | null;
+          notes: string | null;
         };
         Insert: {
           id?: string;
@@ -114,6 +127,7 @@ export interface Database {
           assigned_to?: string | null;
           last_interaction_at?: string | null;
           created_at?: string | null;
+          notes?: string | null;
         };
         Update: {
           id?: string;
@@ -126,6 +140,7 @@ export interface Database {
           assigned_to?: string | null;
           last_interaction_at?: string | null;
           created_at?: string | null;
+          notes?: string | null;
         };
         Relationships: [];
       };

@@ -58,6 +58,8 @@ Contexto atual:
       /dashboard/page.tsx
       /pipelines/[id]/page.tsx
     /api
+      /pipelines
+        /stage-integration/route.ts
       /webhooks
         /site/route.ts
         /whatsapp/route.ts
@@ -66,6 +68,8 @@ Contexto atual:
   /components
     /kanban
       Board.tsx
+      CreateLeadDialog.tsx
+      StageConfigDialog.tsx
       Column.tsx
       LeadCard.tsx
     /lead-modal
@@ -117,6 +121,9 @@ Contexto atual:
 - `Board.tsx` usa `dnd-kit`.
 - Drag and drop com update otimista.
 - Realtime configurado para ouvir a tabela `leads`.
+- Cadastro manual de lead direto pelo pipeline.
+- Criacao e configuracao de etapa direto pelo pipeline.
+- Cada etapa pode armazenar resumo operacional e webhook proprio.
 - `LeadCard.tsx` calcula SLA visual:
   - amarelo acima de 24h.
   - vermelho acima de 48h.
@@ -127,7 +134,24 @@ Contexto atual:
 - Chat visual estilo WhatsApp Web.
 - Assinatura Realtime na tabela `messages` por `lead_id`.
 - Envio chama a rota interna `POST /api/webhooks/whatsapp`.
-- Enquanto a integracao real da Meta nao esta pronta, a rota salva a mensagem no Supabase e responde com status de integracao pendente.
+- A rota salva a mensagem no Supabase e tenta enviar pela Meta Cloud API quando as credenciais estiverem configuradas.
+- Quando a Meta ainda nao estiver ligada, a mensagem continua salva como historico local do lead.
+
+### Lead operations
+
+- `LeadDetails.tsx` permite editar nome, telefone, e-mail, valor e observacoes.
+- O campo `observacoes` e persistido em `public.leads.notes`.
+- Toda alteracao relevante do lead atualiza `last_interaction_at`.
+
+### Stage operations
+
+- `StageConfigDialog.tsx` cria novas etapas no fim do pipeline.
+- Cada etapa pode configurar:
+  - `description`
+  - `integration_enabled`
+  - `integration_label`
+  - `integration_webhook_url`
+- A rota `POST /api/pipelines/stage-integration` dispara um webhook quando um lead entra em uma etapa configurada.
 
 ### Webhook inbound do site
 
@@ -159,6 +183,12 @@ Contexto atual:
   - `stages`
   - `leads`
   - `messages`
+- Campos operacionais adicionados:
+  - `leads.notes`
+  - `stages.description`
+  - `stages.integration_enabled`
+  - `stages.integration_label`
+  - `stages.integration_webhook_url`
 - Indices principais criados.
 - Funcoes `current_tenant_id()` e `is_tenant_admin()` criadas.
 - RLS habilitado em todas as tabelas.
@@ -218,6 +248,7 @@ Variaveis previstas:
 - `DEFAULT_WEBHOOK_TENANT_KEY`
 - `META_WHATSAPP_TOKEN`
 - `META_WHATSAPP_PHONE_NUMBER_ID`
+- `META_GRAPH_API_VERSION`
 
 ## What Is Missing
 
@@ -246,17 +277,22 @@ Status atual:
 
 - Middleware/guard de autenticacao para proteger rotas privadas.
 - Carregamento server-side da sessao quando for sair do modo demo.
-- CRUD real de pipelines e stages.
-- CRUD completo de leads.
+- CRUD real de pipelines.
+- CRUD completo de stages:
+  - reordenar
+  - excluir com seguranca
+- CRUD completo de leads:
+  - excluir
+  - ownership `assigned_to`
+  - historico mais rico alem de observacoes
 - Atualizacao de `assigned_to`.
 - Dashboard puxando metricas reais do banco.
-- Campos customizados do lead.
+- Campos customizados do lead alem de `notes`.
 - Filtros, busca e ordenacao do pipeline.
 - Historico extra alem de mensagens, como notas, tarefas e atividades.
 
 ## Missing For WhatsApp Real
 
-- Implementar disparo real para Meta Cloud API na rota `/api/webhooks/whatsapp`.
 - Criar `/api/webhooks/whatsapp/inbound` para receber mensagens da Meta.
 - Validar assinatura do webhook da Meta.
 - Persistir mensagens inbound reais na tabela `messages`.
@@ -310,6 +346,7 @@ Seguir esta ordem, salvo instrucao explicita em contrario:
 
 - Motor do board, colunas e cards.
 - Prioridade maxima em UX e sincronizacao do pipeline.
+- Tambem concentra a entrada manual de leads e a configuracao basica de etapas.
 
 ### `src/components/lead-modal/*`
 
@@ -322,6 +359,12 @@ Seguir esta ordem, salvo instrucao explicita em contrario:
 ### `src/app/api/webhooks/whatsapp/route.ts`
 
 - Saida controlada de mensagem para WhatsApp.
+- Salva historico local primeiro e tenta despacho real para Meta quando configurada.
+
+### `src/app/api/pipelines/stage-integration/route.ts`
+
+- Dispara webhook de automacao quando um lead entra em etapa com integracao ativa.
+- Deve sempre validar tenant e sessao antes de tocar dados do CRM.
 
 ### `supabase/migrations/*`
 
@@ -367,12 +410,12 @@ Uma tarefa so esta concluida se:
 
 ## Current Local Validation Status
 
-Ultima validacao feita em `2026-04-02`:
+Ultima validacao feita em `2026-04-04`:
 
 - `npm run lint`: ok
 - `npm run typecheck`: ok
 - `npm run build`: ok
-- `npx -y react-doctor@latest . --verbose --diff`: 100/100
+- `npx -y react-doctor@latest . --verbose --diff`: 99/100
 
 ## Note For Future Agents
 

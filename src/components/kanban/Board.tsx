@@ -7,11 +7,16 @@ import {
   CircleDot,
   Clock3,
   GripVertical,
+  Link2,
   Mail,
   Phone,
+  Plus,
   RadioTower,
   RefreshCw,
+  Settings2,
 } from "lucide-react";
+import { CreateLeadDialog } from "@/components/kanban/CreateLeadDialog";
+import { StageConfigDialog } from "@/components/kanban/StageConfigDialog";
 import { LeadDetails } from "@/components/lead-modal/LeadDetails";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -38,9 +43,10 @@ type BoardProps = {
 };
 
 const EMPTY_COLUMNS: BoardColumn[] = [];
-const STAGE_SELECT = "id, pipeline_id, tenant_id, name, position";
+const STAGE_SELECT =
+  "id, pipeline_id, tenant_id, name, position, description, integration_enabled, integration_label, integration_webhook_url";
 const LEAD_SELECT =
-  "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at";
+  "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at, notes";
 
 function findLead(columns: BoardColumn[], leadId: string | null) {
   if (!leadId) {
@@ -134,6 +140,13 @@ function syncColumnsFromRecord(record: Record<string, LeadRow[]>, columns: Board
   });
 }
 
+function replaceLead(columns: BoardColumn[], nextLead: LeadRow) {
+  return columns.map((column) => ({
+    ...column,
+    leads: column.leads.map((lead) => (lead.id === nextLead.id ? nextLead : lead)),
+  }));
+}
+
 function getLeadInitials(name: string) {
   return name
     .split(" ")
@@ -160,7 +173,7 @@ function getLeadTone(timestamp: string | null | undefined) {
       card: "border-amber-300 bg-amber-50/85",
       badge: "warning" as const,
       badgeAppearance: "light" as const,
-      label: "Atenção",
+      label: "Atencao",
     };
   }
 
@@ -172,8 +185,18 @@ function getLeadTone(timestamp: string | null | undefined) {
   };
 }
 
+function getNotesPreview(notes: string | null | undefined) {
+  if (!notes) {
+    return null;
+  }
+
+  const compact = notes.replace(/\s+/g, " ").trim();
+  return compact.length > 0 ? compact : null;
+}
+
 function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
   const tone = getLeadTone(lead.last_interaction_at);
+  const notesPreview = getNotesPreview(lead.notes);
 
   return (
     <KanbanItem key={lead.id} value={lead.id}>
@@ -224,6 +247,12 @@ function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
                 {formatElapsedTime(lead.last_interaction_at)}
               </p>
             </div>
+
+            {notesPreview ? (
+              <div className="mt-4 rounded-[18px] border border-line/70 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-600">
+                <p className="line-clamp-3">{notesPreview}</p>
+              </div>
+            ) : null}
           </button>
 
           <KanbanItemHandle asChild>
@@ -252,6 +281,10 @@ export function Board({
   const [selectedLead, setSelectedLead] = useState<LeadRow | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSyncedRealtime, setHasSyncedRealtime] = useState(false);
+  const [isCreateLeadOpen, setIsCreateLeadOpen] = useState(false);
+  const [createLeadStageId, setCreateLeadStageId] = useState<string | null>(null);
+  const [isStageDialogOpen, setIsStageDialogOpen] = useState(false);
+  const [editingStage, setEditingStage] = useState<StageRow | null>(null);
   const visibleColumns = columns ?? initialColumns;
   const columnRecord = buildColumnRecord(visibleColumns);
 
@@ -352,7 +385,17 @@ export function Board({
     }
   }, [selectedLead, visibleColumns]);
 
-  async function persistStageChange(leadId: string, stageId: string) {
+  function openLeadCreation(stageId?: string) {
+    setCreateLeadStageId(stageId ?? visibleColumns[0]?.id ?? null);
+    setIsCreateLeadOpen(true);
+  }
+
+  function openStageConfig(stage?: StageRow | null) {
+    setEditingStage(stage ?? null);
+    setIsStageDialogOpen(true);
+  }
+
+  async function persistStageChange(leadId: string, stageId: string, previousStageId: string) {
     if (!tenantId || !isSupabaseConfigured()) {
       return;
     }
@@ -371,19 +414,38 @@ export function Board({
       if (error) {
         throw error;
       }
+
+      try {
+        const response = await fetch("/api/pipelines/stage-integration", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            leadId,
+            pipelineId,
+            stageId,
+            previousStageId,
+          }),
+        });
+
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as
+            | { error?: string }
+            | null;
+          console.error("Falha ao disparar integracao de etapa:", payload?.error);
+        }
+      } catch (integrationError) {
+        console.error("Falha ao chamar a integracao da etapa:", integrationError);
+      }
     } catch (error) {
       console.error("Falha ao mover lead:", error);
       void syncBoard();
     }
   }
 
-  const totalLeads = visibleColumns.reduce(
-    (sum, column) => sum + column.leads.length,
-    0,
-  );
-  const modeLabel = hasSyncedRealtime
-    ? "Realtime sincronizado"
-    : "Sincronizando Supabase";
+  const totalLeads = visibleColumns.reduce((sum, column) => sum + column.leads.length, 0);
+  const modeLabel = hasSyncedRealtime ? "Realtime sincronizado" : "Sincronizando Supabase";
 
   return (
     <>
@@ -398,8 +460,9 @@ export function Board({
               Kanban fluido
             </div>
             <p className="text-sm leading-6 text-muted">
-              {totalLeads} leads em acompanhamento. Drag and drop otimista com
-              assinatura Realtime na tabela `leads`.
+              {totalLeads} leads em acompanhamento. Agora voce pode cadastrar
+              leads manualmente, registrar observacoes e configurar webhook por
+              etapa.
             </p>
           </div>
 
@@ -412,6 +475,25 @@ export function Board({
               <RadioTower className="size-4" />
               {modeLabel}
             </Badge>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => openLeadCreation()}
+              disabled={visibleColumns.length === 0}
+              className="rounded-full text-slate-600 hover:text-brand"
+            >
+              <Plus className="size-4" />
+              Novo lead
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => openStageConfig()}
+              className="rounded-full text-slate-600 hover:text-brand"
+            >
+              <Plus className="size-4" />
+              Nova etapa
+            </Button>
             <Button
               variant="outline"
               size="md"
@@ -448,7 +530,7 @@ export function Board({
             setColumns(nextColumns);
 
             if (activeContainer !== overContainer) {
-              await persistStageChange(String(event.active.id), overContainer);
+              await persistStageChange(String(event.active.id), overContainer, activeContainer);
             }
           }}
           className="overflow-x-auto pb-2"
@@ -469,37 +551,85 @@ export function Board({
                 >
                   <div className="mb-4 space-y-3 rounded-[22px] border border-line/80 bg-white/80 p-4">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-2">
                         <div className="rounded-full bg-brand-soft p-2 text-brand">
                           <CircleDot className="size-4" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold tracking-tight text-slate-950">
-                            {column.name}
-                          </h3>
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="font-semibold tracking-tight text-slate-950">
+                              {column.name}
+                            </h3>
+                            {column.integration_enabled ? (
+                              <Badge
+                                variant="primary"
+                                appearance="light"
+                                className="rounded-full px-2.5 py-1 text-[11px]"
+                              >
+                                <Link2 className="size-3.5" />
+                                {column.integration_label ?? "Webhook ativo"}
+                              </Badge>
+                            ) : null}
+                          </div>
                           <p className="text-xs text-muted">posicao {column.position + 1}</p>
+                          {column.description ? (
+                            <p className="text-sm leading-6 text-muted">{column.description}</p>
+                          ) : null}
                         </div>
                       </div>
 
-                      <Badge variant="secondary" appearance="light" className="rounded-full px-3 py-1">
-                        {column.leads.length}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="secondary"
+                          appearance="light"
+                          className="rounded-full px-3 py-1"
+                        >
+                          {column.leads.length}
+                        </Badge>
+                        <button
+                          type="button"
+                          onClick={() => openStageConfig(column)}
+                          className="rounded-full border border-line bg-white p-2 text-slate-500 transition hover:border-brand/20 hover:text-brand"
+                          aria-label={`Configurar etapa ${column.name}`}
+                        >
+                          <Settings2 className="size-4" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                      Pipeline estimado:{" "}
-                      <span className="font-semibold text-slate-900">
-                        {formatCurrency(stageValue)}
+                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                      <span>
+                        Pipeline estimado:{" "}
+                        <span className="font-semibold text-slate-900">
+                          {formatCurrency(stageValue)}
+                        </span>
                       </span>
+                      <button
+                        type="button"
+                        onClick={() => openLeadCreation(column.id)}
+                        className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand/20 hover:text-brand"
+                      >
+                        + Lead
+                      </button>
                     </div>
                   </div>
 
-                  <KanbanColumnContent value={column.id} className="flex flex-1 flex-col gap-3 [content-visibility:auto]">
+                  <KanbanColumnContent
+                    value={column.id}
+                    className="flex flex-1 flex-col gap-3 [content-visibility:auto]"
+                  >
                     {column.leads.map((lead) => renderLeadCard(lead, setSelectedLead))}
 
                     {column.leads.length === 0 ? (
-                      <div className="flex flex-1 items-center justify-center rounded-[22px] border border-dashed border-line bg-white/60 px-4 py-10 text-center text-sm text-muted">
-                        Solte um lead aqui para mover para esta etapa.
+                      <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-[22px] border border-dashed border-line bg-white/60 px-4 py-10 text-center text-sm text-muted">
+                        <p>Solte um lead aqui ou crie o primeiro lead desta etapa.</p>
+                        <button
+                          type="button"
+                          onClick={() => openLeadCreation(column.id)}
+                          className="rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand/20 hover:text-brand"
+                        >
+                          Criar lead nesta etapa
+                        </button>
                       </div>
                     ) : null}
                   </KanbanColumnContent>
@@ -540,6 +670,35 @@ export function Board({
         </Kanban>
       </section>
 
+      <CreateLeadDialog
+        open={isCreateLeadOpen}
+        onOpenChange={setIsCreateLeadOpen}
+        tenantId={tenantId}
+        stages={visibleColumns}
+        defaultStageId={createLeadStageId}
+        onCreated={(lead) => {
+          setSelectedLead(lead);
+          void syncBoard();
+        }}
+      />
+
+      <StageConfigDialog
+        open={isStageDialogOpen}
+        onOpenChange={(open) => {
+          setIsStageDialogOpen(open);
+          if (!open) {
+            setEditingStage(null);
+          }
+        }}
+        tenantId={tenantId}
+        pipelineId={pipelineId}
+        defaultPosition={visibleColumns.length}
+        stage={editingStage}
+        onSaved={() => {
+          void syncBoard();
+        }}
+      />
+
       <LeadDetails
         lead={selectedLead}
         open={Boolean(selectedLead)}
@@ -547,6 +706,12 @@ export function Board({
           if (!open) {
             setSelectedLead(null);
           }
+        }}
+        onLeadUpdated={(updatedLead) => {
+          setSelectedLead(updatedLead);
+          setColumns((currentColumns) =>
+            currentColumns ? replaceLead(currentColumns, updatedLead) : currentColumns,
+          );
         }}
       />
     </>

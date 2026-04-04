@@ -30,6 +30,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   async function syncMessages() {
     if (!isSupabaseConfigured()) {
@@ -113,12 +114,14 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
       };
 
       setDraft("");
+      setFeedback("Mensagem salva apenas no modo demo. Configure o Supabase para envio real.");
       setMessages((currentMessages) => [...currentMessages, demoMessage]);
       return;
     }
 
     try {
       setIsSending(true);
+      setFeedback(null);
 
       const response = await fetch("/api/webhooks/whatsapp", {
         method: "POST",
@@ -131,15 +134,38 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
         }),
       });
 
+      const payload = (await response.json()) as {
+        error?: string;
+        metaStatus?: string;
+        metaError?: string | null;
+      };
+
       if (!response.ok) {
-        const payload = (await response.json()) as { error?: string };
         throw new Error(payload.error ?? "Nao foi possivel enviar a mensagem.");
       }
 
       setDraft("");
+      if (payload.metaStatus === "sent") {
+        setFeedback("Mensagem enviada para o WhatsApp oficial do lead.");
+      } else if (payload.metaStatus === "skipped_no_meta_credentials") {
+        setFeedback("Mensagem salva no historico. Ative as credenciais da Meta para envio real.");
+      } else if (payload.metaStatus === "missing_lead_phone") {
+        setFeedback("Mensagem salva no historico, mas o lead ainda nao tem telefone para WhatsApp.");
+      } else if (payload.metaStatus === "dispatch_failed") {
+        setFeedback(
+          payload.metaError
+            ? `Mensagem salva no CRM, mas a Meta recusou o envio: ${payload.metaError}`
+            : "Mensagem salva no CRM, mas a Meta nao aceitou o envio.",
+        );
+      } else {
+        setFeedback("Mensagem salva no historico do lead.");
+      }
       void syncMessages();
     } catch (error) {
       console.error("Falha ao enviar mensagem:", error);
+      setFeedback(
+        error instanceof Error ? error.message : "Falha ao enviar mensagem para o lead.",
+      );
     } finally {
       setIsSending(false);
     }
@@ -155,7 +181,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
           <div>
             <h3 className="font-semibold text-slate-950">WhatsApp do lead</h3>
             <p className="text-sm text-muted">
-              Realtime filtrado por `lead_id` com envio via rota interna.
+              Historico persistido por `lead_id`. Com Meta configurada, esta caixa passa a disparar o WhatsApp oficial.
             </p>
           </div>
         </div>
@@ -206,6 +232,11 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
       </ScrollArea>
 
       <div className="border-t border-line bg-white p-4">
+        {feedback ? (
+          <div className="mb-3 rounded-[18px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            {feedback}
+          </div>
+        ) : null}
         <div className="flex gap-3">
           <textarea
             value={draft}

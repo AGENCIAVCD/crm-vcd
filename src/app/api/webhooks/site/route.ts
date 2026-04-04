@@ -9,6 +9,9 @@ const leadWebhookSchema = z.object({
     .union([z.string().email(), z.literal(""), z.undefined()])
     .transform((value) => value || null),
   value: z.coerce.number().min(0).optional().default(0),
+  notes: z
+    .union([z.string(), z.literal(""), z.undefined()])
+    .transform((value) => value || null),
   pipelineId: z.string().uuid().optional(),
   tenantKey: z.string().min(3, "tenantKey obrigatorio."),
 });
@@ -96,6 +99,7 @@ export async function POST(request: Request) {
         phone: parsedPayload.data.phone,
         email: parsedPayload.data.email,
         value: parsedPayload.data.value,
+        notes: parsedPayload.data.notes,
         last_interaction_at: new Date().toISOString(),
       })
       .select(LEAD_SELECT)
@@ -126,4 +130,4 @@ export async function POST(request: Request) {
 }
 
 const LEAD_SELECT =
-  "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at";
+  "id, tenant_id, stage_id, name, phone, email, value, assigned_to, last_interaction_at, created_at, notes";

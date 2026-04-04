@@ -32,6 +32,10 @@ export function getDemoBoardColumns(
       tenant_id: DEMO_TENANT_ID,
       name: "Entrada",
       position: 0,
+      description: "Primeiro contato e triagem comercial.",
+      integration_enabled: false,
+      integration_label: null,
+      integration_webhook_url: null,
       leads: [
         {
           id: LEAD_IDS.rafah,
@@ -44,6 +48,7 @@ export function getDemoBoardColumns(
           assigned_to: null,
           last_interaction_at: hoursAgo(8),
           created_at: hoursAgo(30),
+          notes: "Lead entrou por indicacao e quer entender CRM + WhatsApp para a recepcao.",
         },
         {
           id: LEAD_IDS.orto,
@@ -56,6 +61,7 @@ export function getDemoBoardColumns(
           assigned_to: null,
           last_interaction_at: hoursAgo(27),
           created_at: hoursAgo(35),
+          notes: "Precisa de organizacao do pipeline antes de investir em automacao.",
         },
       ],
     },
@@ -65,6 +71,10 @@ export function getDemoBoardColumns(
       tenant_id: DEMO_TENANT_ID,
       name: "Diagnostico",
       position: 1,
+      description: "Leads que responderam briefing inicial.",
+      integration_enabled: false,
+      integration_label: null,
+      integration_webhook_url: null,
       leads: [
         {
           id: LEAD_IDS.solar,
@@ -77,6 +87,7 @@ export function getDemoBoardColumns(
           assigned_to: null,
           last_interaction_at: hoursAgo(18),
           created_at: hoursAgo(50),
+          notes: "Ja mandou as dores da operacao comercial e quer proposta consultiva.",
         },
       ],
     },
@@ -86,6 +97,10 @@ export function getDemoBoardColumns(
       tenant_id: DEMO_TENANT_ID,
       name: "Proposta",
       position: 2,
+      description: "Etapa de proposta comercial ativa.",
+      integration_enabled: true,
+      integration_label: "Webhook N8N",
+      integration_webhook_url: "https://example.com/hooks/proposta",
       leads: [
         {
           id: LEAD_IDS.premium,
@@ -98,6 +113,7 @@ export function getDemoBoardColumns(
           assigned_to: null,
           last_interaction_at: hoursAgo(51),
           created_at: hoursAgo(75),
+          notes: "Objeção principal em prazo de onboarding e treinamento da equipe.",
         },
       ],
     },
@@ -107,6 +123,10 @@ export function getDemoBoardColumns(
       tenant_id: DEMO_TENANT_ID,
       name: "Fechamento",
       position: 3,
+      description: "Negociacao final e fechamento.",
+      integration_enabled: false,
+      integration_label: null,
+      integration_webhook_url: null,
       leads: [
         {
           id: LEAD_IDS.escola,
@@ -119,6 +139,7 @@ export function getDemoBoardColumns(
           assigned_to: null,
           last_interaction_at: hoursAgo(12),
           created_at: hoursAgo(84),
+          notes: "Aguardando aprovacao final da diretoria e assinatura do contrato.",
         },
       ],
     },
