@@ -100,7 +100,7 @@ export default async function DashboardPage() {
           {pipelineId ? (
             <Link
               href={`/pipelines/${pipelineId}`}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
+              className="btn-dark inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
             >
               Abrir pipeline
               <ArrowRight className="size-4" />

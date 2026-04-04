@@ -219,7 +219,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
             onClick={() => {
               void handleSendMessage();
             }}
-            className="inline-flex h-fit items-center gap-2 rounded-[20px] bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-dark inline-flex h-fit items-center gap-2 rounded-[20px] px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed"
           >
             <SendHorizonal className="size-4" />
             {isSending ? "Enviando" : "Enviar"}

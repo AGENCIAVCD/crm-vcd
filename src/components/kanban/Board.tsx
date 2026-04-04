@@ -1,23 +1,34 @@
 "use client";
 
-import {
-  closestCorners,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  type DragEndEvent,
-  type DragStartEvent,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { startTransition, useEffect, useEffectEvent, useState } from "react";
-import { Activity, RadioTower, RefreshCw } from "lucide-react";
-import { Column } from "@/components/kanban/Column";
+import { arrayMove } from "@dnd-kit/sortable";
+import {
+  Activity,
+  CircleDot,
+  Clock3,
+  GripVertical,
+  Mail,
+  Phone,
+  RadioTower,
+  RefreshCw,
+} from "lucide-react";
 import { LeadDetails } from "@/components/lead-modal/LeadDetails";
 import { useAuth } from "@/components/providers/auth-provider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge-2";
+import { Button } from "@/components/ui/button-1";
+import {
+  Kanban,
+  KanbanBoard,
+  KanbanColumn,
+  KanbanColumnContent,
+  KanbanItem,
+  KanbanItemHandle,
+  KanbanOverlay,
+  type KanbanMoveEvent,
+} from "@/components/ui/kanban";
 import { createBrowserSupabaseClient, isSupabaseConfigured } from "@/lib/supabase-client";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency, formatElapsedTime, getLeadSlaState } from "@/lib/utils";
 import type { BoardColumn, LeadRow, StageRow } from "@/types/crm";
 
 type BoardProps = {
@@ -39,10 +50,6 @@ function findLead(columns: BoardColumn[], leadId: string | null) {
   return columns.flatMap((column) => column.leads).find((lead) => lead.id === leadId) ?? null;
 }
 
-function findLeadStage(columns: BoardColumn[], leadId: string) {
-  return columns.find((column) => column.leads.some((lead) => lead.id === leadId)) ?? null;
-}
-
 function cloneColumns(columns: BoardColumn[]) {
   return columns.map((column) => ({
     ...column,
@@ -54,63 +61,44 @@ function cloneColumns(columns: BoardColumn[]) {
 
 function moveLead(
   columns: BoardColumn[],
-  activeLeadId: string,
-  overId: string,
-  overType: "lead" | "stage",
-  targetStageId: string,
+  activeContainer: string,
+  activeIndex: number,
+  overContainer: string,
+  overIndex: number,
 ) {
   const draft = cloneColumns(columns);
-  const sourceColumn = draft.find((column) =>
-    column.leads.some((lead) => lead.id === activeLeadId),
-  );
-  const targetColumn = draft.find((column) => column.id === targetStageId);
+  const sourceColumn = draft.find((column) => column.id === activeContainer);
+  const targetColumn = draft.find((column) => column.id === overContainer);
 
   if (!sourceColumn || !targetColumn) {
     return columns;
   }
 
-  const sourceIndex = sourceColumn.leads.findIndex((lead) => lead.id === activeLeadId);
-
-  if (sourceIndex === -1) {
+  if (activeIndex < 0 || activeIndex >= sourceColumn.leads.length) {
     return columns;
   }
 
-  if (sourceColumn.id === targetColumn.id && overType === "lead") {
-    const targetIndex = targetColumn.leads.findIndex((lead) => lead.id === overId);
-
-    if (targetIndex === -1 || targetIndex === sourceIndex) {
+  if (sourceColumn.id === targetColumn.id) {
+    if (activeIndex === overIndex) {
       return columns;
     }
 
-    targetColumn.leads = arrayMove(targetColumn.leads, sourceIndex, targetIndex);
+    targetColumn.leads = arrayMove(
+      targetColumn.leads,
+      activeIndex,
+      Math.max(0, Math.min(overIndex, targetColumn.leads.length - 1)),
+    );
     return draft;
   }
 
-  const [movedLead] = sourceColumn.leads.splice(sourceIndex, 1);
+  const [movedLead] = sourceColumn.leads.splice(activeIndex, 1);
   const nextLead: LeadRow = {
     ...movedLead,
-    stage_id: targetStageId,
+    stage_id: overContainer,
     last_interaction_at: new Date().toISOString(),
   };
-
-  if (sourceColumn.id === targetColumn.id) {
-    targetColumn.leads.push(nextLead);
-    return draft;
-  }
-
-  if (overType === "lead") {
-    const targetIndex = targetColumn.leads.findIndex((lead) => lead.id === overId);
-
-    if (targetIndex === -1) {
-      targetColumn.leads.push(nextLead);
-    } else {
-      targetColumn.leads.splice(targetIndex, 0, nextLead);
-    }
-
-    return draft;
-  }
-
-  targetColumn.leads.push(nextLead);
+  const safeIndex = Math.max(0, Math.min(overIndex, targetColumn.leads.length));
+  targetColumn.leads.splice(safeIndex, 0, nextLead);
   return draft;
 }
 
@@ -119,6 +107,138 @@ function buildColumns(stages: StageRow[], leads: LeadRow[]) {
     ...stage,
     leads: leads.filter((lead) => lead.stage_id === stage.id),
   }));
+}
+
+function buildColumnRecord(columns: BoardColumn[]) {
+  return Object.fromEntries(columns.map((column) => [column.id, column.leads])) as Record<
+    string,
+    LeadRow[]
+  >;
+}
+
+function syncColumnsFromRecord(record: Record<string, LeadRow[]>, columns: BoardColumn[]) {
+  const columnMap = new Map(columns.map((column) => [column.id, column]));
+
+  return Object.keys(record).map((columnId, index) => {
+    const currentColumn = columnMap.get(columnId);
+
+    if (!currentColumn) {
+      throw new Error(`Coluna ${columnId} nao encontrada ao sincronizar Kanban.`);
+    }
+
+    return {
+      ...currentColumn,
+      position: index,
+      leads: record[columnId] ?? [],
+    };
+  });
+}
+
+function getLeadInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((chunk) => chunk[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function getLeadTone(timestamp: string | null | undefined) {
+  const slaState = getLeadSlaState(timestamp);
+
+  if (slaState === "critical") {
+    return {
+      card: "border-rose-300 bg-rose-50/85",
+      badge: "destructive" as const,
+      badgeAppearance: "light" as const,
+      label: "Critico",
+    };
+  }
+
+  if (slaState === "warning") {
+    return {
+      card: "border-amber-300 bg-amber-50/85",
+      badge: "warning" as const,
+      badgeAppearance: "light" as const,
+      label: "Atenção",
+    };
+  }
+
+  return {
+    card: "border-line bg-white",
+    badge: "success" as const,
+    badgeAppearance: "light" as const,
+    label: "Saudavel",
+  };
+}
+
+function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
+  const tone = getLeadTone(lead.last_interaction_at);
+
+  return (
+    <KanbanItem key={lead.id} value={lead.id}>
+      <article
+        className={cn(
+          "rounded-[22px] border p-4 shadow-[0_14px_35px_-26px_rgba(15,23,42,0.55)] transition",
+          tone.card,
+        )}
+      >
+        <div className="flex items-start gap-3">
+          <button type="button" onClick={() => onOpenLead(lead)} className="flex-1 text-left">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <Avatar className="size-10">
+                  <AvatarFallback className="bg-brand-soft font-semibold text-brand">
+                    {getLeadInitials(lead.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-base font-semibold tracking-tight text-slate-950">
+                    {lead.name}
+                  </p>
+                  <p className="mt-1 text-sm text-muted">{formatCurrency(lead.value)}</p>
+                </div>
+              </div>
+              <Badge variant={tone.badge} appearance={tone.badgeAppearance} className="shrink-0">
+                {tone.label}
+              </Badge>
+            </div>
+
+            <div className="mt-4 space-y-2 text-sm text-slate-600">
+              {lead.phone ? (
+                <p className="flex items-center gap-2">
+                  <Phone className="size-4 text-brand" />
+                  {lead.phone}
+                </p>
+              ) : null}
+
+              {lead.email ? (
+                <p className="flex items-center gap-2">
+                  <Mail className="size-4 text-accent" />
+                  {lead.email}
+                </p>
+              ) : null}
+
+              <p className="flex items-center gap-2">
+                <Clock3 className="size-4 text-slate-500" />
+                {formatElapsedTime(lead.last_interaction_at)}
+              </p>
+            </div>
+          </button>
+
+          <KanbanItemHandle asChild>
+            <button
+              type="button"
+              aria-label={`Arrastar lead ${lead.name}`}
+              className="rounded-2xl border border-line bg-slate-50 p-2 text-slate-400 transition hover:border-brand/25 hover:text-brand"
+            >
+              <GripVertical className="size-4" />
+            </button>
+          </KanbanItemHandle>
+        </div>
+      </article>
+    </KanbanItem>
+  );
 }
 
 export function Board({
@@ -130,21 +250,10 @@ export function Board({
   const tenantId = tenantIdFromAuth ?? tenantIdFromPage ?? null;
   const [columns, setColumns] = useState<BoardColumn[] | null>(null);
   const [selectedLead, setSelectedLead] = useState<LeadRow | null>(null);
-  const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSyncedRealtime, setHasSyncedRealtime] = useState(false);
   const visibleColumns = columns ?? initialColumns;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const columnRecord = buildColumnRecord(visibleColumns);
 
   async function syncBoard() {
     if (!tenantId || !isSupabaseConfigured()) {
@@ -268,56 +377,6 @@ export function Board({
     }
   }
 
-  function handleDragStart(event: DragStartEvent) {
-    setActiveLeadId(String(event.active.id));
-  }
-
-  async function handleDragEnd(event: DragEndEvent) {
-    setActiveLeadId(null);
-
-    if (!event.over) {
-      return;
-    }
-
-    const activeLeadId = String(event.active.id);
-    const overId = String(event.over.id);
-    const sourceColumn = findLeadStage(visibleColumns, activeLeadId);
-
-    if (!sourceColumn) {
-      return;
-    }
-
-    const overType = event.over.data.current?.type === "stage" ? "stage" : "lead";
-    const targetStageId =
-      overType === "stage"
-        ? String(event.over.data.current?.stageId ?? overId)
-        : String(event.over.data.current?.stageId ?? overId);
-
-    if (!targetStageId) {
-      return;
-    }
-
-    const nextColumns = moveLead(
-      visibleColumns,
-      activeLeadId,
-      overId,
-      overType,
-      targetStageId,
-    );
-    const targetColumn = findLeadStage(nextColumns, activeLeadId);
-
-    if (!targetColumn) {
-      return;
-    }
-
-    setColumns(nextColumns);
-
-    if (sourceColumn.id !== targetColumn.id) {
-      await persistStageChange(activeLeadId, targetColumn.id);
-    }
-  }
-
-  const activeLead = findLead(visibleColumns, activeLeadId);
   const totalLeads = visibleColumns.reduce(
     (sum, column) => sum + column.leads.length,
     0,
@@ -345,52 +404,140 @@ export function Board({
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-medium",
-                "border-brand/20 bg-brand-soft text-brand",
-              )}
+            <Badge
+              variant="primary"
+              appearance="light"
+              className="rounded-full border border-brand/20 px-3 py-1.5 text-sm font-medium"
             >
               <RadioTower className="size-4" />
               {modeLabel}
-            </span>
-            <button
-              type="button"
+            </Badge>
+            <Button
+              variant="outline"
+              size="md"
               onClick={() => void syncBoard()}
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 font-medium text-slate-600 transition hover:border-brand/25 hover:text-brand"
+              className="rounded-full text-slate-600 hover:text-brand"
             >
               <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
               Atualizar
-            </button>
+            </Button>
           </div>
         </div>
 
-        <div className="overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-4">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCorners}
-              onDragStart={handleDragStart}
-              onDragEnd={(event) => {
-                void handleDragEnd(event);
-              }}
-            >
-              {visibleColumns.map((column) => (
-                <Column
+        <Kanban
+          value={columnRecord}
+          onValueChange={(nextValue) => {
+            setColumns(syncColumnsFromRecord(nextValue, visibleColumns));
+          }}
+          getItemValue={(lead) => lead.id}
+          onMove={async ({
+            event,
+            activeContainer,
+            activeIndex,
+            overContainer,
+            overIndex,
+          }: KanbanMoveEvent) => {
+            const nextColumns = moveLead(
+              visibleColumns,
+              activeContainer,
+              activeIndex,
+              overContainer,
+              overIndex,
+            );
+
+            setColumns(nextColumns);
+
+            if (activeContainer !== overContainer) {
+              await persistStageChange(String(event.active.id), overContainer);
+            }
+          }}
+          className="overflow-x-auto pb-2"
+        >
+          <KanbanBoard className="grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {visibleColumns.map((column) => {
+              const stageValue = column.leads.reduce(
+                (sum, lead) => sum + Number(lead.value ?? 0),
+                0,
+              );
+
+              return (
+                <KanbanColumn
                   key={column.id}
-                  column={column}
-                  onOpenLead={setSelectedLead}
-                />
-              ))}
-            </DndContext>
-          </div>
-        </div>
+                  value={column.id}
+                  disabled
+                  className="min-h-[540px] rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,251,0.92))] p-4 shadow-[0_16px_45px_-30px_rgba(15,23,42,0.45)]"
+                >
+                  <div className="mb-4 space-y-3 rounded-[22px] border border-line/80 bg-white/80 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full bg-brand-soft p-2 text-brand">
+                          <CircleDot className="size-4" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold tracking-tight text-slate-950">
+                            {column.name}
+                          </h3>
+                          <p className="text-xs text-muted">posicao {column.position + 1}</p>
+                        </div>
+                      </div>
 
-        {activeLead ? (
-          <div className="mt-4 text-xs text-slate-500">
-            Arrastando: <span className="font-semibold text-slate-700">{activeLead.name}</span>
-          </div>
-        ) : null}
+                      <Badge variant="secondary" appearance="light" className="rounded-full px-3 py-1">
+                        {column.leads.length}
+                      </Badge>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                      Pipeline estimado:{" "}
+                      <span className="font-semibold text-slate-900">
+                        {formatCurrency(stageValue)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <KanbanColumnContent value={column.id} className="flex flex-1 flex-col gap-3 [content-visibility:auto]">
+                    {column.leads.map((lead) => renderLeadCard(lead, setSelectedLead))}
+
+                    {column.leads.length === 0 ? (
+                      <div className="flex flex-1 items-center justify-center rounded-[22px] border border-dashed border-line bg-white/60 px-4 py-10 text-center text-sm text-muted">
+                        Solte um lead aqui para mover para esta etapa.
+                      </div>
+                    ) : null}
+                  </KanbanColumnContent>
+                </KanbanColumn>
+              );
+            })}
+          </KanbanBoard>
+
+          <KanbanOverlay>
+            {({ value, variant }) => {
+              if (variant === "item") {
+                const lead = findLead(visibleColumns, String(value));
+
+                if (lead) {
+                  return (
+                    <div className="opacity-95">
+                      <article className="rounded-[22px] border border-line bg-white p-4 shadow-[0_22px_45px_-24px_rgba(15,23,42,0.55)]">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-10">
+                            <AvatarFallback className="bg-brand-soft font-semibold text-brand">
+                              {getLeadInitials(lead.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-semibold text-slate-950">{lead.name}</p>
+                            <p className="text-sm text-muted">{formatCurrency(lead.value)}</p>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  );
+                }
+              }
+
+              return <div className="size-full rounded-[22px] bg-muted/60" />;
+            }}
+          </KanbanOverlay>
+        </Kanban>
       </section>
 
       <LeadDetails
