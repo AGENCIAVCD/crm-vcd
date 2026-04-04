@@ -12,6 +12,14 @@ function isProtectedPath(pathname: string) {
   );
 }
 
+function withSupabaseCookies(target: NextResponse, source: NextResponse) {
+  source.cookies.getAll().forEach((cookie) => {
+    target.cookies.set(cookie);
+  });
+
+  return target;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
@@ -36,11 +44,14 @@ export async function proxy(request: NextRequest) {
       loginUrl.searchParams.set("next", next);
     }
 
-    return NextResponse.redirect(loginUrl);
+    return withSupabaseCookies(NextResponse.redirect(loginUrl), response);
   }
 
   if (user && (pathname === "/" || pathname === "/login")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return withSupabaseCookies(
+      NextResponse.redirect(new URL("/dashboard", request.url)),
+      response,
+    );
   }
 
   return response;
@@ -49,4 +60,3 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: ["/", "/login", "/dashboard/:path*", "/pipelines/:path*"],
 };
-
