@@ -161,27 +161,27 @@ function getLeadTone(timestamp: string | null | undefined) {
 
   if (slaState === "critical") {
     return {
-      card: "border-rose-300 bg-rose-50/85",
+      card: "border-l-4 border-[#dc2626] bg-white",
       badge: "destructive" as const,
-      badgeAppearance: "light" as const,
+      badgeAppearance: "outline" as const,
       label: "Critico",
     };
   }
 
   if (slaState === "warning") {
     return {
-      card: "border-amber-300 bg-amber-50/85",
+      card: "border-l-4 border-[#ffb800] bg-white",
       badge: "warning" as const,
-      badgeAppearance: "light" as const,
+      badgeAppearance: "outline" as const,
       label: "Atencao",
     };
   }
 
   return {
-    card: "border-line bg-white",
+    card: "border-l-4 border-black bg-white",
     badge: "success" as const,
-    badgeAppearance: "light" as const,
-    label: "Saudavel",
+    badgeAppearance: "outline" as const,
+    label: "Ativo",
   };
 }
 
@@ -202,7 +202,7 @@ function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
     <KanbanItem key={lead.id} value={lead.id}>
       <article
         className={cn(
-          "rounded-[22px] border p-4 shadow-[0_14px_35px_-26px_rgba(15,23,42,0.55)] transition",
+          "rounded-[24px] border border-black/10 p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5",
           tone.card,
         )}
       >
@@ -211,15 +211,15 @@ function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <Avatar className="size-10">
-                  <AvatarFallback className="bg-brand-soft font-semibold text-brand">
+                  <AvatarFallback className="bg-[#ffb800] font-black text-black">
                     {getLeadInitials(lead.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-base font-semibold tracking-tight text-slate-950">
+                  <p className="text-base font-black uppercase tracking-tight text-black">
                     {lead.name}
                   </p>
-                  <p className="mt-1 text-sm text-muted">{formatCurrency(lead.value)}</p>
+                  <p className="mt-1 text-sm font-medium text-[#575757]">{formatCurrency(lead.value)}</p>
                 </div>
               </div>
               <Badge variant={tone.badge} appearance={tone.badgeAppearance} className="shrink-0">
@@ -227,29 +227,29 @@ function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
               </Badge>
             </div>
 
-            <div className="mt-4 space-y-2 text-sm text-slate-600">
+            <div className="mt-4 space-y-2 text-sm text-[#575757]">
               {lead.phone ? (
                 <p className="flex items-center gap-2">
-                  <Phone className="size-4 text-brand" />
+                  <Phone className="size-4 text-black" />
                   {lead.phone}
                 </p>
               ) : null}
 
               {lead.email ? (
                 <p className="flex items-center gap-2">
-                  <Mail className="size-4 text-accent" />
+                  <Mail className="size-4 text-black" />
                   {lead.email}
                 </p>
               ) : null}
 
               <p className="flex items-center gap-2">
-                <Clock3 className="size-4 text-slate-500" />
+                <Clock3 className="size-4 text-black" />
                 {formatElapsedTime(lead.last_interaction_at)}
               </p>
             </div>
 
             {notesPreview ? (
-              <div className="mt-4 rounded-[18px] border border-line/70 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-600">
+              <div className="mt-4 rounded-[18px] border border-black/10 bg-[#f2f2f2] px-3 py-2 text-sm leading-6 text-[#575757]">
                 <p className="line-clamp-3">{notesPreview}</p>
               </div>
             ) : null}
@@ -259,7 +259,7 @@ function renderLeadCard(lead: LeadRow, onOpenLead: (lead: LeadRow) => void) {
             <button
               type="button"
               aria-label={`Arrastar lead ${lead.name}`}
-              className="rounded-2xl border border-line bg-slate-50 p-2 text-slate-400 transition hover:border-brand/25 hover:text-brand"
+              className="rounded-[14px] border border-black/10 bg-[#f2f2f2] p-2 text-black transition hover:bg-[#ffb800]"
             >
               <GripVertical className="size-4" />
             </button>
@@ -451,15 +451,15 @@ export function Board({
     <>
       <section
         data-panel
-        className="overflow-hidden rounded-[30px] border border-white/70 p-5 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.45)]"
+        className="overflow-hidden rounded-[28px] border border-black/10 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
       >
         <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand-soft px-3 py-1 text-xs font-semibold tracking-[0.2em] text-brand uppercase">
+            <div className="ds-kicker">
               <Activity className="size-3.5" />
               Kanban fluido
             </div>
-            <p className="text-sm leading-6 text-muted">
+            <p className="text-sm leading-7 text-[#575757]">
               {totalLeads} leads em acompanhamento. Agora voce pode cadastrar
               leads manualmente, registrar observacoes e configurar webhook por
               etapa.
@@ -470,17 +470,17 @@ export function Board({
             <Badge
               variant="primary"
               appearance="light"
-              className="rounded-full border border-brand/20 px-3 py-1.5 text-sm font-medium"
+              className="rounded-full border border-black px-3 py-1.5 text-sm font-bold uppercase"
             >
               <RadioTower className="size-4" />
               {modeLabel}
             </Badge>
             <Button
-              variant="outline"
+              variant="secondary"
               size="md"
               onClick={() => openLeadCreation()}
               disabled={visibleColumns.length === 0}
-              className="rounded-full text-slate-600 hover:text-brand"
+              className="rounded-[8px] !bg-[#ffb800] !text-black hover:!bg-[#e5a400] uppercase font-bold"
             >
               <Plus className="size-4" />
               Novo lead
@@ -489,7 +489,7 @@ export function Board({
               variant="outline"
               size="md"
               onClick={() => openStageConfig()}
-              className="rounded-full text-slate-600 hover:text-brand"
+              className="rounded-[8px] !border-black !text-black hover:!bg-black hover:!text-white uppercase font-bold"
             >
               <Plus className="size-4" />
               Nova etapa
@@ -498,7 +498,7 @@ export function Board({
               variant="outline"
               size="md"
               onClick={() => void syncBoard()}
-              className="rounded-full text-slate-600 hover:text-brand"
+              className="rounded-[8px] !border-black !text-black hover:!bg-black hover:!text-white uppercase font-bold"
             >
               <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
               Atualizar
@@ -547,33 +547,35 @@ export function Board({
                   key={column.id}
                   value={column.id}
                   disabled
-                  className="min-h-[540px] rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,251,0.92))] p-4 shadow-[0_16px_45px_-30px_rgba(15,23,42,0.45)]"
+                  className="min-h-[540px] rounded-[24px] border border-black/10 bg-[#fcfcfc] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
                 >
-                  <div className="mb-4 space-y-3 rounded-[22px] border border-line/80 bg-white/80 p-4">
+                  <div className="mb-4 space-y-3 rounded-[20px] border border-black bg-black p-4 text-white">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-2">
-                        <div className="rounded-full bg-brand-soft p-2 text-brand">
+                        <div className="rounded-full bg-[#ffb800] p-2 text-black">
                           <CircleDot className="size-4" />
                         </div>
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-semibold tracking-tight text-slate-950">
+                            <h3 className="font-black uppercase tracking-tight text-white">
                               {column.name}
                             </h3>
                             {column.integration_enabled ? (
                               <Badge
                                 variant="primary"
                                 appearance="light"
-                                className="rounded-full px-2.5 py-1 text-[11px]"
+                                className="rounded-full !bg-[#ffb800] px-2.5 py-1 text-[11px] !text-black"
                               >
                                 <Link2 className="size-3.5" />
                                 {column.integration_label ?? "Webhook ativo"}
                               </Badge>
                             ) : null}
                           </div>
-                          <p className="text-xs text-muted">posicao {column.position + 1}</p>
+                          <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/55">
+                            posicao {column.position + 1}
+                          </p>
                           {column.description ? (
-                            <p className="text-sm leading-6 text-muted">{column.description}</p>
+                            <p className="text-sm leading-6 text-white/72">{column.description}</p>
                           ) : null}
                         </div>
                       </div>
@@ -582,14 +584,14 @@ export function Board({
                         <Badge
                           variant="secondary"
                           appearance="light"
-                          className="rounded-full px-3 py-1"
+                          className="rounded-full !bg-white px-3 py-1 !text-black"
                         >
                           {column.leads.length}
                         </Badge>
                         <button
                           type="button"
                           onClick={() => openStageConfig(column)}
-                          className="rounded-full border border-line bg-white p-2 text-slate-500 transition hover:border-brand/20 hover:text-brand"
+                          className="rounded-full border border-white/15 bg-white/10 p-2 text-white transition hover:bg-[#ffb800] hover:text-black"
                           aria-label={`Configurar etapa ${column.name}`}
                         >
                           <Settings2 className="size-4" />
@@ -597,17 +599,17 @@ export function Board({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                    <div className="flex items-center justify-between gap-3 rounded-[16px] bg-white/10 px-3 py-3 text-sm text-white/74">
                       <span>
                         Pipeline estimado:{" "}
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-black text-white">
                           {formatCurrency(stageValue)}
                         </span>
                       </span>
                       <button
                         type="button"
                         onClick={() => openLeadCreation(column.id)}
-                        className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand/20 hover:text-brand"
+                        className="rounded-[8px] bg-[#ffb800] px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-black transition hover:bg-[#e5a400]"
                       >
                         + Lead
                       </button>
@@ -621,12 +623,12 @@ export function Board({
                     {column.leads.map((lead) => renderLeadCard(lead, setSelectedLead))}
 
                     {column.leads.length === 0 ? (
-                      <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-[22px] border border-dashed border-line bg-white/60 px-4 py-10 text-center text-sm text-muted">
+                      <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-[22px] border-2 border-dashed border-black/15 bg-[#f2f2f2] px-4 py-10 text-center text-sm text-[#575757]">
                         <p>Solte um lead aqui ou crie o primeiro lead desta etapa.</p>
                         <button
                           type="button"
                           onClick={() => openLeadCreation(column.id)}
-                          className="rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand/20 hover:text-brand"
+                          className="btn-dark rounded-[8px] px-4 py-3 text-sm font-bold transition"
                         >
                           Criar lead nesta etapa
                         </button>
@@ -646,16 +648,16 @@ export function Board({
                 if (lead) {
                   return (
                     <div className="opacity-95">
-                      <article className="rounded-[22px] border border-line bg-white p-4 shadow-[0_22px_45px_-24px_rgba(15,23,42,0.55)]">
+                      <article className="rounded-[22px] border border-black/10 bg-white p-4 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.4)]">
                         <div className="flex items-center gap-3">
                           <Avatar className="size-10">
-                            <AvatarFallback className="bg-brand-soft font-semibold text-brand">
+                            <AvatarFallback className="bg-[#ffb800] font-black text-black">
                               {getLeadInitials(lead.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-slate-950">{lead.name}</p>
-                            <p className="text-sm text-muted">{formatCurrency(lead.value)}</p>
+                            <p className="font-black uppercase text-black">{lead.name}</p>
+                            <p className="text-sm text-[#575757]">{formatCurrency(lead.value)}</p>
                           </div>
                         </div>
                       </article>

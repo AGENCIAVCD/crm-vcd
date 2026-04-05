@@ -65,22 +65,21 @@ export default async function PipelinePage({ params }: PipelinePageProps) {
   }
 
   return (
-    <section className="space-y-4">
-      <div className="space-y-2">
-        <p className="text-xs font-semibold tracking-[0.22em] text-brand uppercase">
+    <section className="space-y-6">
+      <div className="space-y-3">
+        <p className="text-[10px] font-black tracking-[0.24em] text-[#575757] uppercase">
           Pipeline ativo
         </p>
         <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
+            <h2 className="text-3xl font-black uppercase leading-[0.95] text-black lg:text-5xl">
               Funil comercial principal
             </h2>
-            <p className="mt-1 text-sm leading-6 text-muted">
-              Drag and drop com atualizacao otimista, sincronizacao em tempo real
-              e acesso restrito a usuarios autenticados.
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#575757] lg:text-base">
+              Crie leads, adicione observações, mova oportunidades entre etapas e conecte automações por coluna com uma leitura forte e operacional.
             </p>
           </div>
-          <p className="rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-slate-600">
+          <p className="rounded-full border-2 border-black bg-white px-4 py-2 text-[10px] font-black tracking-[0.18em] text-black uppercase">
             pipeline_id: {pipelineId}
           </p>
         </div>

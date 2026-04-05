@@ -12,11 +12,12 @@ Este arquivo e a fonte de contexto permanente do projeto.
 Antes de qualquer acao no repositorio:
 
 1. Ler este arquivo por completo.
-2. Preservar a arquitetura SaaS multi-tenant.
-3. Nao escrever nada que permita vazamento entre tenants.
-4. Respeitar a estrutura atual de pastas e convencoes.
-5. Ao final de mudancas de codigo, validar com `npm run lint`, `npm run typecheck` e `npm run build`.
-6. Se houve mudanca em React/Next client components, rodar tambem `npx -y react-doctor@latest . --verbose --diff`.
+2. Ler `DESIGN_SYSTEM.md` por completo antes de qualquer mudanca de UI, UX, componente visual ou pagina.
+3. Preservar a arquitetura SaaS multi-tenant.
+4. Nao escrever nada que permita vazamento entre tenants.
+5. Respeitar a estrutura atual de pastas e convencoes.
+6. Ao final de mudancas de codigo, validar com `npm run lint`, `npm run typecheck` e `npm run build`.
+7. Se houve mudanca em React/Next client components, rodar tambem `npx -y react-doctor@latest . --verbose --diff`.
 
 Se o codigo mudar de forma relevante, este arquivo deve ser atualizado junto.
 
@@ -25,6 +26,12 @@ Regra ativa de produto:
 - a primeira tela para visitantes deve ser `/login`
 - nenhuma rota de CRM pode ser acessada sem sessao valida
 - fallback demo nao deve liberar acesso a visitantes
+
+Regra ativa de design:
+
+- `DESIGN_SYSTEM.md` e a fonte de verdade visual do projeto
+- se houver conflito entre UI atual e o design system, vence o design system
+- toda interface nova deve usar a identidade da Voce Digital Propaganda
 
 ## Product Goal
 
@@ -46,9 +53,16 @@ Contexto atual:
 - Banco: PostgreSQL com RLS.
 - Deploy alvo: Vercel.
 
+## Design Source Of Truth
+
+- Documento principal: `DESIGN_SYSTEM.md`
+- Marca: Voce Digital Propaganda
+- Direcao visual: alto contraste, preto + amarelo, hierarquia forte, foco comercial
+
 ## Current Project Structure
 
 ```text
+/DESIGN_SYSTEM.md
 /src
   /app
     /(auth)
@@ -388,13 +402,14 @@ Seguir esta ordem, salvo instrucao explicita em contrario:
 ## Mandatory Workflow For Any Future Change
 
 1. Ler este `AGENTS.md`.
-2. Ler os arquivos diretamente afetados.
-3. Se tocar banco, revisar impacto em `tenant_id`, RLS, indices e tipos.
-4. Se tocar pipeline, preservar drag and drop, SLA e Realtime.
-5. Se tocar chat, preservar persistencia e filtro por `lead_id`.
-6. Fazer a menor mudanca coerente com a arquitetura.
-7. Validar localmente.
-8. Atualizar este arquivo se a regra do projeto tiver mudado.
+2. Se tocar front/UI, ler `DESIGN_SYSTEM.md`.
+3. Ler os arquivos diretamente afetados.
+4. Se tocar banco, revisar impacto em `tenant_id`, RLS, indices e tipos.
+5. Se tocar pipeline, preservar drag and drop, SLA e Realtime.
+6. Se tocar chat, preservar persistencia e filtro por `lead_id`.
+7. Fazer a menor mudanca coerente com a arquitetura.
+8. Validar localmente.
+9. Atualizar este arquivo se a regra do projeto tiver mudado.
 
 ## Definition Of Done
 
@@ -424,6 +439,7 @@ Este repositorio ja tem direcao definida:
 
 - foco em execucao rapida;
 - UX forte no Kanban;
+- identidade visual forte da Voce Digital Propaganda;
 - dogfooding primeiro;
 - isolamento multi-tenant desde o dia zero;
 - integracao de WhatsApp como parte central do produto.

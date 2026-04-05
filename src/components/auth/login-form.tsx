@@ -122,10 +122,10 @@ export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
     <SignInPage
       title={
         <>
-          CRM VCD para a rotina comercial da <span className="font-light">Você Digital</span>
+          CRM VCD para a rotina comercial da <span className="font-light">VOCE DIGITAL</span>
         </>
       }
-      description="Entre para acompanhar leads, pipeline, SLA e operacao comercial em um fluxo visual e rapido."
+      description="Entre para criar leads, mover oportunidades, registrar observacoes, operar o WhatsApp e evoluir o funil em tempo real."
       heroImageSrc="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80"
       testimonials={loginTestimonials}
       onSignIn={handleSubmit}
@@ -135,7 +135,7 @@ export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
       feedback={feedback}
       isPending={isPending}
       submitLabel={isPending ? "Entrando..." : "Entrar no CRM"}
-      googleLabel="Continuar com Google"
+      googleLabel="Entrar com Google"
       googleDisabled
     />
   );

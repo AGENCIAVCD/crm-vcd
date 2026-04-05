@@ -172,22 +172,22 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
   }
 
   return (
-    <section className="overflow-hidden rounded-[24px] border border-line bg-white">
-      <header className="border-b border-line bg-[linear-gradient(180deg,_rgba(15,118,110,0.08),_rgba(15,118,110,0.02))] px-5 py-4">
+    <section className="overflow-hidden rounded-[24px] border border-black/10 bg-white">
+      <header className="border-b border-black bg-black px-5 py-4 text-white">
         <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-brand-soft p-3 text-brand">
+          <div className="rounded-[18px] bg-[#ffb800] p-3 text-black">
             <MessageCircleMore className="size-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-950">WhatsApp do lead</h3>
-            <p className="text-sm text-muted">
+            <h3 className="text-xl font-black uppercase text-white">WhatsApp do lead</h3>
+            <p className="text-sm text-white/70">
               Historico persistido por `lead_id`. Com Meta configurada, esta caixa passa a disparar o WhatsApp oficial.
             </p>
           </div>
         </div>
       </header>
 
-      <ScrollArea className="h-[420px] bg-[radial-gradient(circle_at_top,_rgba(219,234,254,0.55),_transparent_35%),linear-gradient(180deg,_#f8fbff,_#f1f6f8)] px-4 py-5">
+      <ScrollArea className="h-[420px] bg-[linear-gradient(180deg,_#fcfcfc,_#f2f2f2)] px-4 py-5">
         <div className="space-y-3">
           {messages.map((message) => {
             const outbound = message.direction === "outbound";
@@ -204,15 +204,15 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
                   className={cn(
                     "max-w-[82%] rounded-[22px] px-4 py-3 text-sm shadow-[0_16px_35px_-28px_rgba(15,23,42,0.65)]",
                     outbound
-                      ? "rounded-br-md bg-brand text-white"
-                      : "rounded-bl-md border border-white bg-white text-slate-800",
+                      ? "rounded-br-md bg-black text-white"
+                      : "rounded-bl-md border border-black/10 bg-white text-black",
                   )}
                 >
                   <p className="leading-6">{message.content}</p>
                   <p
                     className={cn(
                       "mt-2 text-[11px]",
-                      outbound ? "text-white/75" : "text-slate-400",
+                      outbound ? "text-white/75" : "text-[#575757]",
                     )}
                   >
                     {formatMessageTime(message.created_at)}
@@ -223,7 +223,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
           })}
 
           {messages.length === 0 && !isLoading ? (
-            <div className="rounded-[20px] border border-dashed border-line bg-white/80 px-4 py-8 text-center text-sm text-muted">
+            <div className="rounded-[20px] border-2 border-dashed border-black/15 bg-white px-4 py-8 text-center text-sm text-[#575757]">
               Nenhuma mensagem ainda. Envie a primeira interacao para abrir o
               historico deste lead.
             </div>
@@ -231,9 +231,9 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
         </div>
       </ScrollArea>
 
-      <div className="border-t border-line bg-white p-4">
+      <div className="border-t border-black/10 bg-white p-4">
         {feedback ? (
-          <div className="mb-3 rounded-[18px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <div className="mb-3 rounded-[18px] border border-black/10 bg-[#f2f2f2] px-4 py-3 text-sm text-[#575757]">
             {feedback}
           </div>
         ) : null}
@@ -242,7 +242,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Escreva uma mensagem para o lead..."
-            className="min-h-[96px] flex-1 resize-none rounded-[20px] border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+            className="ds-textarea min-h-[96px] flex-1 resize-none"
           />
           <button
             type="button"
@@ -250,7 +250,7 @@ export function WhatsAppChat({ lead }: WhatsAppChatProps) {
             onClick={() => {
               void handleSendMessage();
             }}
-            className="btn-dark inline-flex h-fit items-center gap-2 rounded-[20px] px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed"
+            className="btn-attention inline-flex h-fit items-center gap-2 rounded-[8px] px-4 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-70"
           >
             <SendHorizonal className="size-4" />
             {isSending ? "Enviando" : "Enviar"}

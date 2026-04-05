@@ -163,45 +163,45 @@ export function StageConfigDialog({
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2 md:col-span-2">
-              <span className="text-sm font-medium text-slate-700">Nome da etapa</span>
+              <span className="ds-label">Nome da etapa</span>
               <input
                 value={form.name}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, name: event.target.value }))
                 }
                 placeholder="Ex.: Qualificacao, Negociacao, Pos-venda..."
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-input"
               />
             </label>
 
             <label className="space-y-2 md:col-span-2">
-              <span className="text-sm font-medium text-slate-700">Resumo operacional da etapa</span>
+              <span className="ds-label">Resumo operacional da etapa</span>
               <textarea
                 value={form.description}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, description: event.target.value }))
                 }
                 placeholder="Ex.: aqui entram leads que ja responderam o briefing inicial e precisam de diagnostico."
-                className="min-h-[120px] w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-textarea min-h-[120px]"
               />
             </label>
           </div>
 
-          <section className="rounded-[24px] border border-line bg-slate-50/70 p-4">
+          <section className="rounded-[24px] border border-black/10 bg-[#f2f2f2] p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-2xl bg-brand-soft p-3 text-brand">
+              <div className="rounded-[18px] bg-[#ffb800] p-3 text-black">
                 <Link2 className="size-5" />
               </div>
               <div className="flex-1 space-y-3">
                 <div>
-                  <h3 className="font-semibold text-slate-950">Integracao por etapa</h3>
-                  <p className="text-sm leading-6 text-muted">
+                  <h3 className="text-xl font-black uppercase text-black">Integracao por etapa</h3>
+                  <p className="text-sm leading-6 text-[#575757]">
                     Quando um lead entrar nesta etapa, o CRM pode disparar um webhook
                     com os dados do lead e da etapa para automacoes externas.
                   </p>
                 </div>
 
-                <label className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3">
+                <label className="flex items-center gap-3 rounded-[16px] border border-black/10 bg-white px-4 py-3">
                   <input
                     type="checkbox"
                     checked={form.integrationEnabled}
@@ -211,16 +211,16 @@ export function StageConfigDialog({
                         integrationEnabled: event.target.checked,
                       }))
                     }
-                    className="size-4 rounded border-line text-brand focus:ring-brand"
+                    className="size-4 rounded border-black text-black focus:ring-[#ffb800]"
                   />
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-semibold text-black">
                     Ativar webhook ao entrar nesta etapa
                   </span>
                 </label>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="space-y-2">
-                    <span className="text-sm font-medium text-slate-700">Rotulo da integracao</span>
+                    <span className="ds-label">Rotulo da integracao</span>
                     <input
                       value={form.integrationLabel}
                       onChange={(event) =>
@@ -230,12 +230,12 @@ export function StageConfigDialog({
                         }))
                       }
                       placeholder="Ex.: RD Station, webhook N8N, planilha..."
-                      className="w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white"
                     />
                   </label>
 
                   <label className="space-y-2">
-                    <span className="text-sm font-medium text-slate-700">URL do webhook</span>
+                    <span className="ds-label">URL do webhook</span>
                     <input
                       value={form.integrationWebhookUrl}
                       onChange={(event) =>
@@ -245,7 +245,7 @@ export function StageConfigDialog({
                         }))
                       }
                       placeholder="https://seu-workflow.com/webhook/vcd-crm"
-                      className="w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white"
                     />
                   </label>
                 </div>
@@ -254,7 +254,7 @@ export function StageConfigDialog({
           </section>
 
           {feedback ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
               {feedback}
             </div>
           ) : null}
@@ -263,14 +263,14 @@ export function StageConfigDialog({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-600 transition hover:text-slate-950"
+              className="btn-outline-dark rounded-[8px] px-4 py-3 text-sm font-bold transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-dark inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed"
+              className="btn-dark inline-flex items-center justify-center gap-2 rounded-[8px] px-4 py-3 text-sm font-bold transition disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <LoaderCircle className="size-4 animate-spin" />

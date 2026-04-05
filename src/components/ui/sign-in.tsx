@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Sparkles } from "lucide-react";
 
 const GoogleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 48 48">
@@ -48,44 +48,42 @@ interface SignInPageProps {
   googleDisabled?: boolean;
 }
 
-const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-violet-400/70 focus-within:bg-violet-500/10">
-    {children}
-  </div>
-);
+const EMPTY_TESTIMONIALS: Testimonial[] = [];
 
-const TestimonialCard = ({
-  testimonial,
-  delay,
-}: {
-  testimonial: Testimonial;
-  delay: string;
-}) => (
-  <div
-    className={`animate-testimonial ${delay} flex w-64 items-start gap-3 rounded-3xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl`}
-  >
-    <img
-      src={testimonial.avatarSrc}
-      className="h-10 w-10 rounded-2xl object-cover"
-      alt={testimonial.name}
-    />
-    <div className="text-sm leading-snug">
-      <p className="flex items-center gap-1 font-medium">{testimonial.name}</p>
-      <p className="text-muted-foreground">{testimonial.handle}</p>
-      <p className="mt-1 text-foreground/80">{testimonial.text}</p>
+function TestimonialCard({ testimonial, delay }: { testimonial: Testimonial; delay: string }) {
+  return (
+    <div
+      className={`animate-testimonial ${delay} w-full max-w-xs rounded-[24px] border border-white/10 bg-black/70 p-5 text-white shadow-[0_24px_60px_-40px_rgba(0,0,0,0.8)] backdrop-blur-md`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="relative h-12 w-12 overflow-hidden rounded-[18px] ring-2 ring-[#ffb800]">
+          <Image
+            src={testimonial.avatarSrc}
+            alt={testimonial.name}
+            fill
+            sizes="48px"
+            className="object-cover"
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="font-bold uppercase tracking-[0.08em] text-[#ffb800]">
+            {testimonial.name}
+          </p>
+          <p className="text-xs font-medium uppercase tracking-[0.14em] text-white/60">
+            {testimonial.handle}
+          </p>
+        </div>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-white/85">{testimonial.text}</p>
     </div>
-  </div>
-);
+  );
+}
 
 export const SignInPage: React.FC<SignInPageProps> = ({
-  title = (
-    <span className="font-light tracking-tighter text-foreground">
-      Welcome
-    </span>
-  ),
+  title = <span>Welcome</span>,
   description = "Access your account and continue your journey with us",
   heroImageSrc,
-  testimonials = [],
+  testimonials = EMPTY_TESTIMONIALS,
   onSignIn,
   onGoogleSignIn,
   onResetPassword,
@@ -97,163 +95,173 @@ export const SignInPage: React.FC<SignInPageProps> = ({
   googleDisabled = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const emailInputId = "signin-email";
+  const accessFieldId = "signin-access";
 
   return (
-    <div className="font-geist flex h-[100dvh] w-[100dvw] flex-col md:flex-row">
-      <section className="flex flex-1 items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <div className="flex flex-col gap-6">
-            <h1 className="animate-element animate-delay-100 text-4xl font-semibold leading-tight md:text-5xl">
+    <div className="flex min-h-[100dvh] flex-col bg-[#f9f9f9] md:flex-row">
+      <section className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-10 md:px-10 lg:px-14">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,184,0,0.18),_transparent_28%),linear-gradient(180deg,_#fffdf8_0%,_#f9f9f9_100%)]" />
+        <div className="relative z-10 w-full max-w-xl">
+          <div className="animate-element animate-delay-100 inline-flex items-center gap-2 rounded-full bg-[#ffb800] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-black">
+            <Sparkles className="size-3.5" />
+            Você Digital Propaganda
+          </div>
+
+          <div className="mt-6">
+            <p className="animate-element animate-delay-200 text-[10px] font-black uppercase tracking-[0.24em] text-[#575757]">
+              Acesso interno do comercial
+            </p>
+            <h1 className="animate-element animate-delay-300 mt-3 text-4xl font-black uppercase leading-[0.95] text-black md:text-6xl">
               {title}
             </h1>
-            <p className="animate-element animate-delay-200 text-muted-foreground">
+            <p className="animate-element animate-delay-400 mt-5 max-w-lg text-base leading-7 text-[#575757] md:text-lg">
               {description}
             </p>
+          </div>
 
-            <form className="space-y-5" onSubmit={onSignIn}>
-              <div className="animate-element animate-delay-300">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Email Address
-                </label>
-                <GlassInputWrapper>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    className="w-full rounded-2xl bg-transparent p-4 text-sm focus:outline-none"
-                  />
-                </GlassInputWrapper>
-              </div>
+          <form className="animate-element animate-delay-500 mt-10 space-y-5" onSubmit={onSignIn}>
+            <div className="space-y-2">
+              <label htmlFor={emailInputId} className="ds-label">
+                E-mail
+              </label>
+              <input
+                id={emailInputId}
+                name="email"
+                type="email"
+                placeholder="seuemail@vocedigitalpropaganda.com.br"
+                className="ds-input"
+              />
+            </div>
 
-              <div className="animate-element animate-delay-400">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Password
-                </label>
-                <GlassInputWrapper>
-                  <div className="relative">
-                    <input
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      className="w-full rounded-2xl bg-transparent p-4 pr-12 text-sm focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((current) => !current)}
-                      className="absolute inset-y-0 right-3 flex items-center"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
-                      )}
-                    </button>
-                  </div>
-                </GlassInputWrapper>
-              </div>
-
-              <div className="animate-element animate-delay-500 flex items-center justify-between text-sm">
-                <label className="flex cursor-pointer items-center gap-3">
-                  <input
-                    type="checkbox"
-                    name="rememberMe"
-                    className="custom-checkbox"
-                  />
-                  <span className="text-foreground/90">Keep me signed in</span>
-                </label>
-                <a
-                  href="#"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    onResetPassword?.();
-                  }}
-                  className="text-violet-400 transition-colors hover:underline"
+            <div className="space-y-2">
+              <label htmlFor={accessFieldId} className="ds-label">
+                Senha
+              </label>
+              <div className="relative">
+                <input
+                  id={accessFieldId}
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Digite sua senha"
+                  className="ds-input pr-14"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute inset-y-0 right-4 flex items-center text-[#575757] transition hover:text-black"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
-                  Reset password
-                </a>
+                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                </button>
               </div>
+            </div>
 
+            <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+              <label className="flex cursor-pointer items-center gap-3 text-[#1a1a1a]">
+                <input type="checkbox" name="rememberMe" className="custom-checkbox" />
+                <span className="font-medium">Continuar logado neste dispositivo</span>
+              </label>
               <button
-                type="submit"
-                disabled={isPending}
-                className="animate-element animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                type="button"
+                onClick={() => {
+                  onResetPassword?.();
+                }}
+                className="font-semibold uppercase tracking-[0.08em] text-black transition hover:text-[#ffb800]"
               >
-                {submitLabel}
+                Redefinir senha
               </button>
-
-              {feedback ? (
-                <div className="animate-element animate-delay-700 rounded-2xl border border-border bg-card/70 px-4 py-3 text-sm text-foreground/85 backdrop-blur-sm">
-                  {feedback}
-                </div>
-              ) : null}
-            </form>
-
-            <div className="animate-element animate-delay-800 relative flex items-center justify-center">
-              <span className="w-full border-t border-border"></span>
-              <span className="absolute bg-background px-4 text-sm text-muted-foreground">
-                Or continue with
-              </span>
             </div>
 
             <button
-              type="button"
-              onClick={onGoogleSignIn}
-              disabled={googleDisabled}
-              className="animate-element animate-delay-900 flex w-full items-center justify-center gap-3 rounded-2xl border border-border py-4 transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-70"
+              type="submit"
+              disabled={isPending}
+              className="btn-dark w-full rounded-[8px] px-5 py-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <GoogleIcon />
-              {googleLabel}
+              {submitLabel}
             </button>
 
-            <p className="animate-element animate-delay-1000 text-center text-sm text-muted-foreground">
-              New to our platform?{" "}
-              <a
-                href="#"
-                onClick={(event) => {
-                  event.preventDefault();
-                  onCreateAccount?.();
-                }}
-                className="text-violet-400 transition-colors hover:underline"
-              >
-                Create Account
-              </a>
+            {feedback ? (
+              <div className="rounded-[18px] border border-black/10 bg-white px-4 py-3 text-sm text-[#1a1a1a] shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+                {feedback}
+              </div>
+            ) : null}
+          </form>
+
+          <div className="animate-element animate-delay-700 mt-8 flex items-center gap-4">
+            <span className="h-px flex-1 bg-black/10" />
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-[#575757]">
+              ou continue com
+            </span>
+            <span className="h-px flex-1 bg-black/10" />
+          </div>
+
+          <button
+            type="button"
+            onClick={onGoogleSignIn}
+            disabled={googleDisabled}
+            className="animate-element animate-delay-800 btn-outline-dark mt-5 flex w-full items-center justify-center gap-3 rounded-[8px] px-5 py-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <GoogleIcon />
+            {googleLabel}
+          </button>
+
+          <div className="animate-element animate-delay-900 mt-8 flex items-start gap-3 rounded-[20px] border border-black/10 bg-white px-5 py-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+            <div className="rounded-full bg-[#ffb800] p-2 text-black">
+              <ShieldCheck className="size-4" />
+            </div>
+            <p className="text-sm leading-6 text-[#575757]">
+              Ambiente protegido para operação interna. Rotas privadas do CRM só abrem com sessão válida.
             </p>
           </div>
+
+          <p className="animate-element animate-delay-1000 mt-6 text-sm text-[#575757]">
+            Novo por aqui?{" "}
+            <button
+              type="button"
+              onClick={() => {
+                onCreateAccount?.();
+              }}
+              className="font-semibold uppercase tracking-[0.08em] text-black transition hover:text-[#ffb800]"
+            >
+              Solicitar acesso
+            </button>
+          </p>
         </div>
       </section>
 
       {heroImageSrc ? (
-        <section className="relative hidden flex-1 p-4 md:block">
+        <section className="relative hidden min-h-[100dvh] flex-1 overflow-hidden md:block">
           <div
-            className="animate-slide-right animate-delay-300 absolute inset-4 rounded-3xl bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${heroImageSrc})` }}
           />
-
-          {testimonials.length > 0 ? (
-            <div className="absolute bottom-8 left-1/2 flex w-full -translate-x-1/2 justify-center gap-4 px-8">
-              <TestimonialCard
-                testimonial={testimonials[0]}
-                delay="animate-delay-1000"
-              />
-              {testimonials[1] ? (
-                <div className="hidden xl:flex">
-                  <TestimonialCard
-                    testimonial={testimonials[1]}
-                    delay="animate-delay-1200"
-                  />
-                </div>
-              ) : null}
-              {testimonials[2] ? (
-                <div className="hidden 2xl:flex">
-                  <TestimonialCard
-                    testimonial={testimonials[2]}
-                    delay="animate-delay-1400"
-                  />
-                </div>
-              ) : null}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.78))]" />
+          <div className="animate-slide-right animate-delay-300 absolute inset-0 flex flex-col justify-between p-10 lg:p-14">
+            <div className="max-w-xl">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#ffb800]">
+                Operação, pipeline e follow-up
+              </p>
+              <h2 className="mt-4 text-4xl font-black uppercase leading-[0.95] text-white lg:text-6xl">
+                O CRM da agência precisa ter cara de agência.
+              </h2>
+              <p className="mt-5 max-w-lg text-base leading-7 text-white/76 lg:text-lg">
+                Menos tela neutra, mais comando visual, contexto comercial e clareza para a equipe vender.
+              </p>
             </div>
-          ) : null}
+
+            {testimonials.length > 0 ? (
+              <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+                <TestimonialCard testimonial={testimonials[0]} delay="animate-delay-1000" />
+                {testimonials[1] ? (
+                  <TestimonialCard testimonial={testimonials[1]} delay="animate-delay-1200" />
+                ) : null}
+                {testimonials[2] ? (
+                  <TestimonialCard testimonial={testimonials[2]} delay="animate-delay-1400" />
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </section>
       ) : null}
     </div>

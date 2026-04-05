@@ -16,12 +16,12 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground shadow-xs shadow-black/5 hover:bg-destructive/90",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs shadow-black/5 hover:bg-secondary/90",
-        outline: "border border-input bg-background text-foreground hover:bg-accent",
+        outline: "border-2 border-black bg-background text-foreground hover:bg-black hover:text-white",
         dashed:
-          "border border-dashed border-input bg-background text-foreground hover:bg-accent",
-        ghost: "text-foreground hover:bg-accent",
-        dim: "text-muted-foreground hover:bg-accent hover:text-foreground",
-        foreground: "text-foreground hover:bg-accent",
+          "border border-dashed border-input bg-background text-foreground hover:bg-[#f2f2f2]",
+        ghost: "text-foreground hover:bg-[#f2f2f2]",
+        dim: "text-muted-foreground hover:bg-[#f2f2f2] hover:text-foreground",
+        foreground: "text-foreground hover:bg-[#f2f2f2]",
         inverse: "text-background hover:bg-foreground/10",
       },
       appearance: {

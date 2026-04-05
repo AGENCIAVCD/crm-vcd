@@ -169,18 +169,18 @@ export function LeadDetails({
         </DialogHeader>
 
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="space-y-4 overflow-y-auto rounded-[24px] border border-line bg-slate-50/70 p-4">
+          <section className="space-y-4 overflow-y-auto rounded-[24px] border border-black/10 bg-[#f2f2f2] p-4">
             <div className="grid gap-3 sm:grid-cols-3">
               {leadMetaFields.map((field) => (
                 <div
                   key={field.label}
-                  className="rounded-[20px] border border-white bg-white p-4 shadow-[0_12px_30px_-30px_rgba(15,23,42,0.7)]"
+                  className="rounded-[20px] border border-black/10 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
                 >
-                  <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-muted uppercase">
-                    <field.icon className="size-4 text-brand" />
+                  <div className="flex items-center gap-2 text-[10px] font-black tracking-[0.18em] text-[#575757] uppercase">
+                    <field.icon className="size-4 text-black" />
                     {field.label}
                   </div>
-                  <p className="mt-2 text-sm font-medium text-slate-900">
+                  <p className="mt-2 text-sm font-bold text-black">
                     {field.getValue(currentLead)}
                   </p>
                 </div>
@@ -190,23 +190,23 @@ export function LeadDetails({
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Nome</span>
+                  <span className="ds-label">Nome</span>
                   <div className="relative">
-                    <Building2 className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-brand" />
+                    <Building2 className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-black" />
                     <input
                       value={form.name}
                       onChange={(event) =>
                         setForm((current) => ({ ...current, name: event.target.value }))
                       }
-                      className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white py-3 pl-11 pr-4"
                     />
                   </div>
                 </label>
 
                 <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Valor previsto</span>
+                  <span className="ds-label">Valor previsto</span>
                   <div className="relative">
-                    <BadgeDollarSign className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-brand" />
+                    <BadgeDollarSign className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-black" />
                     <input
                       type="number"
                       min="0"
@@ -215,43 +215,43 @@ export function LeadDetails({
                       onChange={(event) =>
                         setForm((current) => ({ ...current, value: event.target.value }))
                       }
-                      className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white py-3 pl-11 pr-4"
                     />
                   </div>
                 </label>
 
                 <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">Telefone</span>
+                  <span className="ds-label">Telefone</span>
                   <div className="relative">
-                    <Phone className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-brand" />
+                    <Phone className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-black" />
                     <input
                       value={form.phone}
                       onChange={(event) =>
                         setForm((current) => ({ ...current, phone: event.target.value }))
                       }
-                      className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white py-3 pl-11 pr-4"
                     />
                   </div>
                 </label>
 
                 <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">E-mail</span>
+                  <span className="ds-label">E-mail</span>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-brand" />
+                    <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-black" />
                     <input
                       value={form.email}
                       onChange={(event) =>
                         setForm((current) => ({ ...current, email: event.target.value }))
                       }
-                      className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                      className="ds-input bg-white py-3 pl-11 pr-4"
                     />
                   </div>
                 </label>
               </div>
 
               <label className="block space-y-2">
-                <span className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <NotebookPen className="size-4 text-brand" />
+                <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-black">
+                  <NotebookPen className="size-4 text-black" />
                   Observacoes comerciais
                 </span>
                 <textarea
@@ -260,7 +260,7 @@ export function LeadDetails({
                     setForm((current) => ({ ...current, notes: event.target.value }))
                   }
                   placeholder="Registre contexto, objeções, prioridade, origem do lead e próximos passos..."
-                  className="min-h-[180px] w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                  className="ds-textarea min-h-[180px] bg-white"
                 />
               </label>
 
@@ -268,7 +268,7 @@ export function LeadDetails({
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm ${
                     feedback.includes("sucesso")
-                      ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                      ? "border border-black/10 bg-[#fff1bf] text-black"
                       : "border border-rose-200 bg-rose-50 text-rose-700"
                   }`}
                 >
@@ -280,7 +280,7 @@ export function LeadDetails({
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="btn-dark inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed"
+                  className="btn-dark inline-flex items-center justify-center gap-2 rounded-[8px] px-4 py-3 text-sm font-bold transition disabled:cursor-not-allowed"
                 >
                   {isSaving ? (
                     <LoaderCircle className="size-4 animate-spin" />

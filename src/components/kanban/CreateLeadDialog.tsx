@@ -151,25 +151,25 @@ export function CreateLeadDialog({
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Nome do lead</span>
+              <span className="ds-label">Nome do lead</span>
               <input
                 value={form.name}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, name: event.target.value }))
                 }
                 placeholder="Ex.: Clinica Aurora"
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-input"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Etapa inicial</span>
+              <span className="ds-label">Etapa inicial</span>
               <select
                 value={form.stageId}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, stageId: event.target.value }))
                 }
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-select"
               >
                 {stages.map((stage) => (
                   <option key={stage.id} value={stage.id}>
@@ -180,31 +180,31 @@ export function CreateLeadDialog({
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Telefone</span>
+              <span className="ds-label">Telefone</span>
               <input
                 value={form.phone}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, phone: event.target.value }))
                 }
                 placeholder="+55 11 99999-9999"
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-input"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">E-mail</span>
+              <span className="ds-label">E-mail</span>
               <input
                 value={form.email}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, email: event.target.value }))
                 }
                 placeholder="comercial@cliente.com"
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-input"
               />
             </label>
 
             <label className="space-y-2 md:col-span-2">
-              <span className="text-sm font-medium text-slate-700">Valor estimado</span>
+              <span className="ds-label">Valor estimado</span>
               <input
                 type="number"
                 min="0"
@@ -214,25 +214,25 @@ export function CreateLeadDialog({
                   setForm((current) => ({ ...current, value: event.target.value }))
                 }
                 placeholder="0,00"
-                className="w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+                className="ds-input"
               />
             </label>
           </div>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Observacoes</span>
+            <span className="ds-label">Observacoes</span>
             <textarea
               value={form.notes}
               onChange={(event) =>
                 setForm((current) => ({ ...current, notes: event.target.value }))
               }
               placeholder="Contexto do atendimento, origem do lead, objeções iniciais, urgencia..."
-              className="min-h-[140px] w-full rounded-2xl border border-line bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
+              className="ds-textarea min-h-[140px]"
             />
           </label>
 
           {feedback ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
               {feedback}
             </div>
           ) : null}
@@ -241,14 +241,14 @@ export function CreateLeadDialog({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-600 transition hover:text-slate-950"
+              className="btn-outline-dark rounded-[8px] px-4 py-3 text-sm font-bold transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-dark inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed"
+              className="btn-dark inline-flex items-center justify-center gap-2 rounded-[8px] px-4 py-3 text-sm font-bold transition disabled:cursor-not-allowed"
             >
               {isSubmitting ? <LoaderCircle className="size-4 animate-spin" /> : <PlusCircle className="size-4" />}
               {isSubmitting ? "Salvando lead" : "Criar lead"}

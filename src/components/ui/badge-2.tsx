@@ -40,12 +40,12 @@ const badgeVariants = cva(
       {
         variant: "primary",
         appearance: "light",
-        className: "bg-brand-soft text-brand",
+        className: "bg-[#ffb800] text-black",
       },
       {
         variant: "secondary",
         appearance: "light",
-        className: "bg-slate-100 text-slate-700",
+        className: "bg-[#f2f2f2] text-black",
       },
       {
         variant: "success",
@@ -70,7 +70,7 @@ const badgeVariants = cva(
       {
         variant: "primary",
         appearance: "outline",
-        className: "border-brand/20 bg-brand-soft/50 text-brand",
+        className: "border-black bg-[#fff1bf] text-black",
       },
       {
         variant: "success",
@@ -95,12 +95,12 @@ const badgeVariants = cva(
       {
         variant: "primary",
         appearance: "ghost",
-        className: "text-brand",
+        className: "text-black",
       },
       {
         variant: "secondary",
         appearance: "ghost",
-        className: "text-slate-700",
+        className: "text-black",
       },
       {
         variant: "success",

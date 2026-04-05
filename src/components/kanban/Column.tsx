@@ -30,32 +30,34 @@ export function Column({ column, onOpenLead }: ColumnProps) {
     <section
       ref={setNodeRef}
       className={cn(
-        "flex h-full min-h-[540px] min-w-[310px] max-w-[340px] flex-col rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,251,0.92))] p-4 shadow-[0_16px_45px_-30px_rgba(15,23,42,0.45)] transition",
-        isOver && "border-brand/35 shadow-[0_22px_60px_-32px_rgba(15,118,110,0.55)]",
+        "flex h-full min-h-[540px] min-w-[310px] max-w-[340px] flex-col rounded-[24px] border border-black/10 bg-[#fcfcfc] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition",
+        isOver && "border-black shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]",
       )}
     >
-      <div className="mb-4 space-y-3 rounded-[22px] border border-line/80 bg-white/80 p-4">
+      <div className="mb-4 space-y-3 rounded-[20px] border border-black bg-black p-4 text-white">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-brand-soft p-2 text-brand">
+            <div className="rounded-full bg-[#ffb800] p-2 text-black">
               <CircleDot className="size-4" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-950">
+              <h3 className="font-black uppercase tracking-tight text-white">
                 {column.name}
               </h3>
-              <p className="text-xs text-muted">posicao {column.position + 1}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/55">
+                posicao {column.position + 1}
+              </p>
             </div>
           </div>
 
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-black">
             {column.leads.length}
           </span>
         </div>
 
-        <div className="rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+        <div className="rounded-[16px] bg-white/10 px-3 py-3 text-sm text-white/74">
           Pipeline estimado:{" "}
-          <span className="font-semibold text-slate-900">
+          <span className="font-black text-white">
             {formatCurrency(stageValue)}
           </span>
         </div>
@@ -76,7 +78,7 @@ export function Column({ column, onOpenLead }: ColumnProps) {
           ))}
 
           {column.leads.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center rounded-[22px] border border-dashed border-line bg-white/60 px-4 py-10 text-center text-sm text-muted">
+            <div className="flex flex-1 items-center justify-center rounded-[22px] border-2 border-dashed border-black/15 bg-[#f2f2f2] px-4 py-10 text-center text-sm text-[#575757]">
               Solte um lead aqui para mover para esta etapa.
             </div>
           ) : null}

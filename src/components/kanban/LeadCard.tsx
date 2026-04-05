@@ -13,9 +13,9 @@ type LeadCardProps = {
 };
 
 const slaToneMap = {
-  healthy: "border-slate-200",
-  warning: "border-amber-300 bg-amber-50/70",
-  critical: "border-rose-300 bg-rose-50/80",
+  healthy: "border-l-4 border-black",
+  warning: "border-l-4 border-[#ffb800]",
+  critical: "border-l-4 border-[#dc2626]",
 };
 
 export function LeadCard({ lead, stageId, onOpen }: LeadCardProps) {
@@ -47,9 +47,9 @@ export function LeadCard({ lead, stageId, onOpen }: LeadCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group rounded-[22px] border bg-white p-4 shadow-[0_14px_35px_-26px_rgba(15,23,42,0.55)] transition",
+        "group rounded-[24px] border border-black/10 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition",
         slaToneMap[slaState],
-        isDragging && "rotate-1 shadow-[0_22px_45px_-24px_rgba(15,23,42,0.55)] opacity-90",
+        isDragging && "rotate-1 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.4)] opacity-90",
       )}
     >
       <div className="flex items-start gap-3">
@@ -60,33 +60,33 @@ export function LeadCard({ lead, stageId, onOpen }: LeadCardProps) {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-base font-semibold tracking-tight text-slate-950">
+              <p className="text-base font-black uppercase tracking-tight text-black">
                 {lead.name}
               </p>
-              <p className="mt-1 text-sm text-muted">{formatCurrency(lead.value)}</p>
+              <p className="mt-1 text-sm font-medium text-[#575757]">{formatCurrency(lead.value)}</p>
             </div>
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase">
+            <span className="rounded-full bg-[#ffb800] px-2.5 py-1 text-[11px] font-black tracking-[0.18em] text-black uppercase">
               SLA
             </span>
           </div>
 
-          <div className="mt-4 space-y-2 text-sm text-slate-600">
+          <div className="mt-4 space-y-2 text-sm text-[#575757]">
             {lead.phone ? (
               <p className="flex items-center gap-2">
-                <Phone className="size-4 text-brand" />
+                <Phone className="size-4 text-black" />
                 {lead.phone}
               </p>
             ) : null}
 
             {lead.email ? (
               <p className="flex items-center gap-2">
-                <Mail className="size-4 text-accent" />
+                <Mail className="size-4 text-black" />
                 {lead.email}
               </p>
             ) : null}
 
             <p className="flex items-center gap-2">
-              <Clock3 className="size-4 text-slate-500" />
+              <Clock3 className="size-4 text-black" />
               {formatElapsedTime(lead.last_interaction_at)}
             </p>
           </div>
@@ -95,7 +95,7 @@ export function LeadCard({ lead, stageId, onOpen }: LeadCardProps) {
         <button
           type="button"
           aria-label={`Arrastar lead ${lead.name}`}
-          className="rounded-2xl border border-line bg-slate-50 p-2 text-slate-400 transition hover:border-brand/25 hover:text-brand"
+          className="rounded-[14px] border border-black/10 bg-[#f2f2f2] p-2 text-black transition hover:bg-[#ffb800]"
           {...attributes}
           {...listeners}
         >
