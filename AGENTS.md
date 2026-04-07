@@ -80,6 +80,14 @@ Contexto atual:
     /layout.tsx
     /page.tsx
   /components
+    /sales-kanban
+      KanbanBoard.tsx
+      KanbanContext.tsx
+      Column.tsx
+      LeadCard.tsx
+      LeadModal.tsx
+      lead-repository.ts
+      types.ts
     /kanban
       Board.tsx
       CreateLeadDialog.tsx
@@ -131,7 +139,22 @@ Contexto atual:
 
 ### Kanban
 
-- Tela principal do pipeline em `/pipelines/[id]`.
+- Tela principal do MVP em `/dashboard`.
+- `/pipelines/[id]` tambem renderiza o mesmo board MVP para evitar experiencia antiga em links salvos.
+- O MVP operacional atual esta em `src/components/sales-kanban/*`.
+- O board do MVP usa Context API + LocalStorage, com `lead-repository.ts` isolando a persistencia para futura troca por API.
+- Colunas fixas do MVP:
+  - Inbox (Entrada/MQL)
+  - Qualificacao (SQL)
+  - Reuniao/Diagnostico
+  - Proposta Enviada
+  - Follow-up Ativo
+  - Negociacao
+  - Fechado (Ganhou/Perdeu)
+- Cadastro manual de lead com nome, empresa, WhatsApp, e-mail, origem, valor estimado e notas.
+- Cards exibem servico, valor estimado, origem, tempo na etapa, atalho WhatsApp e botao de Dossie.
+- Busca por nome, empresa, servico, origem, e-mail ou WhatsApp.
+- Drag and drop com update local e `enteredStageAt` atualizado ao trocar de etapa.
 - `Board.tsx` usa `dnd-kit`.
 - Drag and drop com update otimista.
 - Realtime configurado para ouvir a tabela `leads`.
