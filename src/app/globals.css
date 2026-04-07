@@ -76,9 +76,9 @@
 html {
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgb(255 184 0 / 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgb(0 0 0 / 0.05), transparent 35%),
-    linear-gradient(180deg, #fffdf8 0%, #f9f9f9 100%);
+    radial-gradient(circle at top left, rgb(255 184 0 / 0.38), transparent 24%),
+    linear-gradient(135deg, rgb(0 0 0 / 0.08) 0 25%, transparent 25% 100%),
+    linear-gradient(180deg, #fff4c7 0%, #f9f9f9 44%, #ffffff 100%);
 }
 
 body {

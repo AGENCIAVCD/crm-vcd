@@ -10,9 +10,9 @@ const badgeVariants = cva(
       variant: {
         primary: "bg-primary text-primary-foreground",
         secondary: "bg-secondary text-secondary-foreground",
-        success: "bg-emerald-600 text-white",
+        success: "bg-black text-white",
         warning: "bg-amber-500 text-slate-950",
-        info: "bg-sky-500 text-white",
+        info: "bg-[#ffb800] text-black",
         outline: "border-border bg-transparent text-foreground",
         destructive: "bg-destructive text-destructive-foreground",
       },
@@ -50,7 +50,7 @@ const badgeVariants = cva(
       {
         variant: "success",
         appearance: "light",
-        className: "bg-emerald-50 text-emerald-700",
+        className: "bg-[#fff1bf] text-black",
       },
       {
         variant: "warning",
@@ -60,7 +60,7 @@ const badgeVariants = cva(
       {
         variant: "info",
         appearance: "light",
-        className: "bg-sky-50 text-sky-700",
+        className: "bg-[#f2f2f2] text-black",
       },
       {
         variant: "destructive",
@@ -75,7 +75,7 @@ const badgeVariants = cva(
       {
         variant: "success",
         appearance: "outline",
-        className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        className: "border-black bg-[#fff1bf] text-black",
       },
       {
         variant: "warning",
@@ -85,7 +85,7 @@ const badgeVariants = cva(
       {
         variant: "info",
         appearance: "outline",
-        className: "border-sky-200 bg-sky-50 text-sky-700",
+        className: "border-black bg-[#f2f2f2] text-black",
       },
       {
         variant: "destructive",
@@ -105,7 +105,7 @@ const badgeVariants = cva(
       {
         variant: "success",
         appearance: "ghost",
-        className: "text-emerald-700",
+        className: "text-black",
       },
       {
         variant: "warning",
@@ -115,7 +115,7 @@ const badgeVariants = cva(
       {
         variant: "info",
         appearance: "ghost",
-        className: "text-sky-700",
+        className: "text-black",
       },
       {
         variant: "destructive",
