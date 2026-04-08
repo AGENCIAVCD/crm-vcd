@@ -65,7 +65,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-ui);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -85,7 +85,10 @@ body {
   min-height: 100vh;
   background: transparent;
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -104,7 +107,57 @@ a {
 }
 
 .font-geist {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), Arial, Helvetica, sans-serif;
+}
+
+.ds-display-title {
+  font-family: var(--font-display), Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.ds-ui-title {
+  font-family: var(--font-ui), Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.ds-body-sm {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.ds-body-md {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ds-meta {
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.ds-caption {
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ds-text-strong {
+  color: #111111;
+}
+
+.ds-text-muted {
+  color: #4b5563;
+}
+
+.ds-text-soft {
+  color: #6b7280;
 }
 
 .btn-dark {

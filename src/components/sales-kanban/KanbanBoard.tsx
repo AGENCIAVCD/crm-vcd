@@ -68,18 +68,18 @@ function getStageForLead(board: ReturnType<typeof useSalesKanban>["board"], lead
 
 function DragPreview({ lead }: { lead: Lead }) {
   return (
-    <div className="w-[300px] rotate-1 rounded-[22px] border border-[#ffb800] bg-white p-4 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.9)]">
-      <p className="line-clamp-1 text-sm font-black uppercase tracking-tight text-black">
+    <div className="w-[292px] rotate-1 rounded-[20px] border border-[#ffb800] bg-white p-4 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.9)]">
+      <p className="ds-ui-title line-clamp-1 text-[0.875rem] text-black">
         {lead.company}
       </p>
-      <p className="mt-1 line-clamp-1 text-xs font-semibold text-[#575757]">
+      <p className="mt-1 line-clamp-1 text-[0.75rem] leading-4 text-[#4b5563]">
         {lead.clientName}
       </p>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <span className="rounded-full bg-[#ffb800] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-black">
+        <span className="rounded-full bg-[#ffb800] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-black">
           {lead.service}
         </span>
-        <strong className="text-sm font-black text-black">
+        <strong className="text-[0.875rem] font-semibold text-black">
           {formatCurrency(lead.estimatedValue)}
         </strong>
       </div>
@@ -171,10 +171,10 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
               <LayoutDashboard className="size-3.5" />
               VCD Sales Board
             </div>
-            <h2 className="mt-5 max-w-4xl text-3xl font-black uppercase leading-[0.92] text-white md:text-5xl">
+            <h2 className="ds-display-title mt-5 max-w-4xl text-2xl leading-[0.95] text-white md:text-4xl">
               Kanban comercial para leads e clientes.
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68">
+            <p className="mt-4 max-w-2xl text-[0.9375rem] leading-6 text-white/76">
               Operação manual com LocalStorage hoje, pronta para trocar o repositório local por API quando o backend entrar.
             </p>
           </div>
@@ -185,14 +185,14 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
               <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/48">
                 Leads
               </p>
-              <p className="mt-1 text-3xl font-black text-white">{leads.length}</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{leads.length}</p>
             </div>
             <div className="rounded-[22px] border border-white/10 bg-white/[0.06] p-4 sm:col-span-2">
               <CircleDollarSign className="size-5 text-[#ffb800]" />
               <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/48">
                 Pipeline estimado
               </p>
-              <p className="mt-1 text-3xl font-black text-white">{formatCurrency(totalValue)}</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{formatCurrency(totalValue)}</p>
             </div>
           </div>
         </div>
@@ -205,7 +205,7 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Buscar por nome, empresa, serviço ou origem..."
-                className="w-full rounded-[16px] border border-white/10 bg-white px-11 py-3 text-sm font-semibold text-black outline-none transition focus:border-[#ffb800] focus:ring-4 focus:ring-[#ffb800]/20"
+                className="w-full rounded-[16px] border border-white/10 bg-white px-11 py-3 text-[0.875rem] font-medium text-black outline-none transition placeholder:text-[#6b7280] focus:border-[#ffb800] focus:ring-4 focus:ring-[#ffb800]/20"
               />
             </div>
 
@@ -217,7 +217,7 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[#ffb800] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-black transition hover:bg-[#e5a400]"
+                className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[#ffb800] px-5 py-3 text-[0.8125rem] font-bold uppercase tracking-[0.08em] text-black transition hover:bg-[#e5a400]"
               >
                 <Plus className="size-4" />
                 Novo Lead

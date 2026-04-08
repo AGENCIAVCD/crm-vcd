@@ -30,7 +30,7 @@ export default async function CrmLayout({
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#ffb800]">
                   Você Digital Propaganda
                 </p>
-                <h1 className="text-xl font-black uppercase leading-tight text-white md:text-2xl">
+                <h1 className="ds-display-title text-lg uppercase leading-tight text-white md:text-[1.625rem]">
                   VCD CRM
                 </h1>
               </div>
@@ -59,7 +59,7 @@ export default async function CrmLayout({
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/45">
                   Sessão ativa
                 </p>
-                <p className="mt-1 text-sm font-black uppercase leading-tight">
+                <p className="mt-1 text-[0.875rem] font-semibold leading-tight">
                   {authenticatedUser.profile.full_name}
                 </p>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#ffb800]">
