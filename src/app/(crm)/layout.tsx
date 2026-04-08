@@ -18,36 +18,36 @@ export default async function CrmLayout({
   const pipelineId = process.env.NEXT_PUBLIC_DEFAULT_PIPELINE_ID;
 
   return (
-    <div className="min-h-screen bg-[#050505]">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-3 py-4 sm:px-5 lg:px-6">
-        <header className="sticky top-3 z-30 mb-4 rounded-[24px] border border-[#ffb800]/30 bg-black/92 px-4 py-3 text-white shadow-[0_26px_80px_-55px_rgba(0,0,0,0.9)] backdrop-blur-xl">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-[14px] bg-[#ffb800] text-black">
-                <ShieldCheck className="size-5" />
+    <div className="min-h-screen bg-[#f6f6f6]">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1520px] flex-col px-3 py-3 sm:px-4 lg:px-5">
+        <header className="sticky top-2 z-30 mb-3 rounded-[18px] border border-black/6 bg-white/88 px-3 py-2.5 text-[#111111] shadow-[0_10px_40px_-34px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex size-9 items-center justify-center rounded-[12px] bg-[#ffb800] text-black">
+                <ShieldCheck className="size-4.5" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#ffb800]">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8a6a00]">
                   Você Digital Propaganda
                 </p>
-                <h1 className="ds-display-title text-lg uppercase leading-tight text-white md:text-[1.625rem]">
+                <h1 className="ds-display-title text-[1rem] leading-tight text-[#111111] md:text-[1.2rem]">
                   VCD CRM
                 </h1>
               </div>
-              <nav className="flex flex-wrap gap-2 text-xs">
+              <nav className="ml-1 flex flex-wrap gap-1.5 text-[0.75rem]">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-[10px] bg-[#ffb800] px-3 py-2 font-black uppercase tracking-[0.08em] text-black transition hover:bg-[#e5a400]"
+                  className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/8 bg-[#111111] px-3 py-2 font-medium text-white transition hover:bg-[#222222]"
                 >
-                  <LayoutDashboard className="size-4" />
+                  <LayoutDashboard className="size-3.5" />
                   Board
                 </Link>
                 {pipelineId ? (
                   <Link
                     href={`/pipelines/${pipelineId}`}
-                    className="inline-flex items-center gap-2 rounded-[10px] border border-white/20 px-3 py-2 font-black uppercase tracking-[0.08em] text-white transition hover:border-[#ffb800] hover:text-[#ffb800]"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/8 bg-transparent px-3 py-2 font-medium text-[#4b5563] transition hover:border-black/18 hover:text-[#111111]"
                   >
-                    <Rows3 className="size-4" />
+                    <Rows3 className="size-3.5" />
                     Pipeline
                   </Link>
                 ) : null}
@@ -55,14 +55,14 @@ export default async function CrmLayout({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-[16px] border border-white/10 bg-white/[0.06] px-4 py-3 text-white">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/45">
+              <div className="rounded-[14px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[#111111]">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
                   Sessão ativa
                 </p>
-                <p className="mt-1 text-[0.875rem] font-semibold leading-tight">
+                <p className="mt-1 text-[0.8125rem] font-medium leading-tight">
                   {authenticatedUser.profile.full_name}
                 </p>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#ffb800]">
+                <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-[#8a6a00]">
                   {authenticatedUser.profile.role}
                 </p>
               </div>

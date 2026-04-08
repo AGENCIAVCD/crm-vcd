@@ -68,18 +68,18 @@ function getStageForLead(board: ReturnType<typeof useSalesKanban>["board"], lead
 
 function DragPreview({ lead }: { lead: Lead }) {
   return (
-    <div className="w-[292px] rotate-1 rounded-[20px] border border-[#ffb800] bg-white p-4 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.9)]">
-      <p className="ds-ui-title line-clamp-1 text-[0.875rem] text-black">
+    <div className="w-[260px] rotate-[0.8deg] rounded-[14px] border border-black/10 bg-white p-3 shadow-[0_16px_40px_-26px_rgba(0,0,0,0.24)]">
+      <p className="ds-ui-title line-clamp-1 text-[0.8125rem] text-black">
         {lead.company}
       </p>
-      <p className="mt-1 line-clamp-1 text-[0.75rem] leading-4 text-[#4b5563]">
+      <p className="mt-0.5 line-clamp-1 text-[0.6875rem] leading-4 text-[#6b7280]">
         {lead.clientName}
       </p>
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <span className="rounded-full bg-[#ffb800] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-black">
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="rounded-full border border-[#f2ddb0] bg-[#fff8e1] px-2 py-1 text-[9px] font-medium text-[#8a6a00]">
           {lead.service}
         </span>
-        <strong className="text-[0.875rem] font-semibold text-black">
+        <strong className="text-[0.8125rem] font-medium text-black">
           {formatCurrency(lead.estimatedValue)}
         </strong>
       </div>
@@ -163,63 +163,63 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="overflow-hidden rounded-[34px] border border-[#ffb800]/30 bg-black text-white shadow-[0_40px_120px_-70px_rgba(0,0,0,0.9)]">
-        <div className="grid gap-6 px-5 py-6 md:grid-cols-[1fr_auto] md:items-end lg:px-7">
+    <section className="space-y-4">
+      <div className="overflow-hidden rounded-[24px] border border-black/8 bg-white shadow-[0_12px_44px_-36px_rgba(0,0,0,0.22)]">
+        <div className="grid gap-5 px-4 py-4 md:grid-cols-[1fr_auto] md:items-start lg:px-5">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#ffb800] px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-black">
-              <LayoutDashboard className="size-3.5" />
-              VCD Sales Board
+            <div className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-[#fafafa] px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <LayoutDashboard className="size-3" />
+              Sales board
             </div>
-            <h2 className="ds-display-title mt-5 max-w-4xl text-2xl leading-[0.95] text-white md:text-4xl">
-              Kanban comercial para leads e clientes.
+            <h2 className="ds-ui-title mt-3 max-w-3xl text-[1.125rem] leading-[1.15] text-[#111111] md:text-[1.375rem]">
+              Pipeline comercial
             </h2>
-            <p className="mt-4 max-w-2xl text-[0.9375rem] leading-6 text-white/76">
-              Operação manual com LocalStorage hoje, pronta para trocar o repositório local por API quando o backend entrar.
+            <p className="mt-2 max-w-2xl text-[0.8125rem] leading-5 text-[#6b7280]">
+              Leads manuais com busca, dossiê e drag and drop.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 md:min-w-[520px]">
-            <div className="rounded-[22px] border border-white/10 bg-white/[0.06] p-4">
-              <Target className="size-5 text-[#ffb800]" />
-              <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/48">
+          <div className="grid gap-2 sm:grid-cols-3 md:min-w-[460px]">
+            <div className="rounded-[16px] border border-black/8 bg-[#fafafa] p-3">
+              <Target className="size-4 text-[#8a6a00]" />
+              <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
                 Leads
               </p>
-              <p className="mt-1 text-2xl font-semibold text-white">{leads.length}</p>
+              <p className="mt-1 text-[1.125rem] font-medium text-[#111111]">{leads.length}</p>
             </div>
-            <div className="rounded-[22px] border border-white/10 bg-white/[0.06] p-4 sm:col-span-2">
-              <CircleDollarSign className="size-5 text-[#ffb800]" />
-              <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-white/48">
+            <div className="rounded-[16px] border border-black/8 bg-[#fafafa] p-3 sm:col-span-2">
+              <CircleDollarSign className="size-4 text-[#8a6a00]" />
+              <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
                 Pipeline estimado
               </p>
-              <p className="mt-1 text-2xl font-semibold text-white">{formatCurrency(totalValue)}</p>
+              <p className="mt-1 text-[1.125rem] font-medium text-[#111111]">{formatCurrency(totalValue)}</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/10 bg-[#0a0a0a] px-5 py-4 lg:px-7">
+        <div className="border-t border-black/6 bg-[#fcfcfc] px-4 py-3 lg:px-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="relative w-full lg:max-w-xl">
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#ffb800]" />
+            <div className="relative w-full lg:max-w-lg">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-3.5 -translate-y-1/2 text-[#9ca3af]" />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Buscar por nome, empresa, serviço ou origem..."
-                className="w-full rounded-[16px] border border-white/10 bg-white px-11 py-3 text-[0.875rem] font-medium text-black outline-none transition placeholder:text-[#6b7280] focus:border-[#ffb800] focus:ring-4 focus:ring-[#ffb800]/20"
+                className="w-full rounded-[12px] border border-black/8 bg-white px-10 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/20 focus:ring-3 focus:ring-black/5"
               />
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="inline-flex items-center justify-center gap-2 rounded-[16px] border border-white/10 bg-white/[0.06] px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-white/68">
-                <DatabaseZap className="size-4 text-[#ffb800]" />
+              <div className="inline-flex items-center justify-center gap-2 rounded-[12px] border border-black/8 bg-white px-3 py-2.5 text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-[#6b7280]">
+                <DatabaseZap className="size-3.5 text-[#8a6a00]" />
                 {isHydrated ? `Sessão de ${userName}` : "Carregando sessão"}
               </div>
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[#ffb800] px-5 py-3 text-[0.8125rem] font-bold uppercase tracking-[0.08em] text-black transition hover:bg-[#e5a400]"
+                className="inline-flex items-center justify-center gap-1.5 rounded-[12px] bg-[#111111] px-4 py-2.5 text-[0.75rem] font-medium text-white transition hover:bg-[#202020]"
               >
-                <Plus className="size-4" />
+                <Plus className="size-3.5" />
                 Novo Lead
               </button>
             </div>
@@ -233,8 +233,8 @@ function BoardWorkspace({ userName }: SalesKanbanDashboardProps) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="overflow-x-auto rounded-[34px] border border-black/10 bg-black p-4 shadow-[0_30px_100px_-70px_rgba(0,0,0,0.8)]">
-          <div className="flex min-w-max gap-4">
+        <div className="overflow-x-auto rounded-[24px] border border-black/8 bg-[#fbfbfb] p-3 shadow-[0_12px_44px_-36px_rgba(0,0,0,0.18)]">
+          <div className="flex min-w-max gap-3">
             {KANBAN_STAGES.map((stage) => {
               const stageLeads = filteredBoard[stage.id];
               const stageValue = board[stage.id].reduce(

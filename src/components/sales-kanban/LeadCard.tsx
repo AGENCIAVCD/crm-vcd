@@ -12,12 +12,12 @@ type LeadCardProps = {
 };
 
 const serviceToneMap: Record<ServiceType, string> = {
-  "Google Ads": "bg-[#ffb800] text-black border-[#ffb800]",
-  SEO: "bg-black text-white border-black",
-  "Social Media": "bg-[#fff1bf] text-black border-[#d6b75a]",
-  "Landing Page": "bg-[#f3f4f6] text-black border-[#d1d5db]",
-  "Tráfego + CRM": "bg-[#1a1a1a] text-[#ffb800] border-[#1a1a1a]",
-  Consultoria: "bg-[#f3f4f6] text-black border-[#d1d5db]",
+  "Google Ads": "bg-[#fff8e1] text-[#8a6a00] border-[#f2ddb0]",
+  SEO: "bg-[#f5f5f5] text-[#374151] border-[#e5e7eb]",
+  "Social Media": "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
+  "Landing Page": "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
+  "Tráfego + CRM": "bg-[#f5f5f5] text-[#111111] border-[#e5e7eb]",
+  Consultoria: "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
 };
 
 function getStageAge(enteredStageAt: string) {
@@ -91,9 +91,9 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         transition,
       }}
       className={cn(
-        "group rounded-[20px] border border-black/10 bg-white p-3.5 shadow-[0_14px_34px_-28px_rgba(0,0,0,0.55)] transition duration-200 hover:-translate-y-0.5 hover:border-black/25 hover:shadow-[0_22px_44px_-32px_rgba(0,0,0,0.65)]",
+        "group rounded-[14px] border border-black/8 bg-white p-3 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.18)] transition duration-200 hover:border-black/12 hover:shadow-[0_10px_28px_-24px_rgba(0,0,0,0.24)]",
         getAlertClass(stageAge.days),
-        isDragging && "rotate-1 opacity-80 shadow-[0_28px_70px_-38px_rgba(0,0,0,0.8)]",
+        isDragging && "rotate-[0.8deg] opacity-85 shadow-[0_16px_40px_-26px_rgba(0,0,0,0.28)]",
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -102,10 +102,10 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
           onClick={() => onOpenDossier(lead.id)}
           className="min-w-0 flex-1 text-left"
         >
-          <p className="ds-ui-title line-clamp-2 break-words text-[0.875rem] leading-[1.2] text-[#111111]">
+          <p className="ds-ui-title line-clamp-2 break-words text-[0.8125rem] leading-[1.3] text-[#111111]">
             {lead.company}
           </p>
-          <p className="mt-1 line-clamp-1 text-[0.75rem] leading-4 text-[#4b5563]">
+          <p className="mt-0.5 line-clamp-1 text-[0.6875rem] leading-4 text-[#6b7280]">
             {lead.clientName}
           </p>
         </button>
@@ -113,64 +113,64 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         <button
           type="button"
           aria-label={`Arrastar ${lead.company}`}
-          className="rounded-[12px] border border-black/10 bg-[#f3f4f6] p-2 text-black transition hover:bg-[#ffb800]"
+          className="rounded-[10px] border border-black/8 bg-[#fafafa] p-1.5 text-[#6b7280] transition hover:border-black/14 hover:bg-[#f3f4f6] hover:text-[#111111]"
           {...attributes}
           {...listeners}
         >
-          <GripVertical className="size-3.5" />
+          <GripVertical className="size-3" />
         </button>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
         <span
           className={cn(
-            "rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
+            "rounded-full border px-2 py-1 text-[9px] font-medium tracking-[0.04em]",
             serviceToneMap[lead.service],
           )}
         >
           {lead.service}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-black">
-          <Clock3 className="size-3" />
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#f9fafb] px-2 py-1 text-[9px] font-medium tracking-[0.04em] text-[#6b7280]">
+          <Clock3 className="size-2.5" />
           {stageAge.label}
         </span>
       </div>
 
-      <div className="mt-3 grid gap-2 text-[0.75rem] leading-4 text-[#4b5563]">
+      <div className="mt-2.5 grid gap-1.5 text-[0.6875rem] leading-4 text-[#6b7280]">
         <p className="flex items-center justify-between gap-3">
-          <span className="font-medium text-[#4b5563]">Contrato estimado</span>
-          <strong className="text-[0.875rem] font-semibold text-[#111111]">
+          <span className="font-normal">Contrato estimado</span>
+          <strong className="text-[0.8125rem] font-medium text-[#111111]">
             {formatCurrency(lead.estimatedValue)}
           </strong>
         </p>
         <p className="flex items-center gap-2">
-          <RadioTower className="size-3.5 shrink-0 text-[#111111]" />
+          <RadioTower className="size-3 shrink-0 text-[#6b7280]" />
           <span className="line-clamp-1 break-all">{lead.origin || "Origem não informada"}</span>
         </p>
       </div>
 
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-3 flex items-center gap-1.5">
         <a
           href={whatsappUrl ?? undefined}
           target="_blank"
           rel="noreferrer"
           aria-disabled={!whatsappUrl}
           className={cn(
-            "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[12px] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] transition",
+            "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[10px] border px-2.5 py-2 text-[10px] font-medium transition",
             whatsappUrl
-              ? "bg-[#ffb800] text-black hover:bg-[#e5a400]"
-              : "pointer-events-none bg-[#f3f4f6] text-[#6b7280]",
+              ? "border-[#e5e7eb] bg-[#fafafa] text-[#4b5563] hover:border-black/14 hover:text-[#111111]"
+              : "pointer-events-none border-[#e5e7eb] bg-[#fafafa] text-[#9ca3af]",
           )}
         >
-          <MessageCircle className="size-4" />
+          <MessageCircle className="size-3.5" />
           WhatsApp
         </a>
         <button
           type="button"
           onClick={() => onOpenDossier(lead.id)}
-          className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[12px] border border-black bg-black px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition hover:bg-[#1a1a1a]"
+          className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[10px] border border-black/8 bg-[#111111] px-2.5 py-2 text-[10px] font-medium text-white transition hover:bg-[#222222]"
         >
-          <FileText className="size-4" />
+          <FileText className="size-3.5" />
           Dossiê
         </button>
       </div>

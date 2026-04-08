@@ -39,9 +39,9 @@ export function SignOutButton() {
         type="button"
         onClick={handleSignOut}
         disabled={isPending}
-        className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-white/[0.06] px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:border-[#ffb800] hover:bg-[#ffb800] hover:text-black disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-black/8 bg-[#fafafa] px-3 py-2.5 text-[0.75rem] font-medium text-[#4b5563] transition hover:border-black/18 hover:bg-white hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        <LogOut className="size-4" />
+        <LogOut className="size-3.5" />
         {isPending ? "Saindo..." : "Sair"}
       </button>
 
