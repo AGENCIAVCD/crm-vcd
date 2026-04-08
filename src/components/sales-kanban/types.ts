@@ -49,6 +49,7 @@ export const SERVICE_TYPES = [
 
 export type StageId = (typeof KANBAN_STAGES)[number]["id"];
 export type ServiceType = (typeof SERVICE_TYPES)[number];
+export type IntegrationProvider = "none" | "webhook" | "make" | "google-sheets";
 
 export type Lead = {
   id: string;
@@ -78,8 +79,26 @@ export type LeadDraft = {
 };
 
 export type BoardState = Record<StageId, Lead[]>;
+export type StageIntegrationsState = Record<StageId, StageIntegrationConfig>;
+
+export type StageIntegrationConfig = {
+  provider: IntegrationProvider;
+  enabled: boolean;
+  label: string;
+  webhookUrl: string;
+};
 
 export const EMPTY_BOARD_STATE = KANBAN_STAGES.reduce((accumulator, stage) => {
   accumulator[stage.id] = [];
   return accumulator;
 }, {} as BoardState);
+
+export const EMPTY_STAGE_INTEGRATIONS = KANBAN_STAGES.reduce((accumulator, stage) => {
+  accumulator[stage.id] = {
+    provider: "none",
+    enabled: false,
+    label: "",
+    webhookUrl: "",
+  };
+  return accumulator;
+}, {} as StageIntegrationsState);

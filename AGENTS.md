@@ -72,6 +72,8 @@ Contexto atual:
       /dashboard/page.tsx
       /pipelines/[id]/page.tsx
     /api
+      /integrations
+        /webhook/route.ts
       /pipelines
         /stage-integration/route.ts
       /webhooks
@@ -86,6 +88,7 @@ Contexto atual:
       Column.tsx
       LeadCard.tsx
       LeadModal.tsx
+      StageIntegrationModal.tsx
       lead-repository.ts
       types.ts
     /kanban
@@ -155,6 +158,12 @@ Contexto atual:
 - Cards exibem servico, valor estimado, origem, tempo na etapa, atalho WhatsApp e botao de Dossie.
 - Busca por nome, empresa, servico, origem, e-mail ou WhatsApp.
 - Drag and drop com update local e `enteredStageAt` atualizado ao trocar de etapa.
+- Cada etapa do MVP agora pode configurar integracao local com:
+  - webhook custom
+  - Make
+  - Google Sheets via Apps Script/webhook
+- As configuracoes de integracao do MVP ficam em LocalStorage por tenant.
+- Quando um lead entra em uma etapa com integracao ativa, o app chama `POST /api/integrations/webhook`.
 - `Board.tsx` usa `dnd-kit`.
 - Drag and drop com update otimista.
 - Realtime configurado para ouvir a tabela `leads`.
@@ -189,6 +198,8 @@ Contexto atual:
   - `integration_label`
   - `integration_webhook_url`
 - A rota `POST /api/pipelines/stage-integration` dispara um webhook quando um lead entra em uma etapa configurada.
+- No MVP local, `StageIntegrationModal.tsx` permite configurar integracao diretamente na coluna.
+- A rota `POST /api/integrations/webhook` despacha payload generico para Make, Google Sheets ou qualquer webhook HTTP.
 
 ### Webhook inbound do site
 

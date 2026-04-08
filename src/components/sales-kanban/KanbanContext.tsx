@@ -11,18 +11,26 @@ import {
 } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAuth } from "@/components/providers/auth-provider";
-import { getBoardStorageKey, leadRepository } from "@/components/sales-kanban/lead-repository";
+import {
+  getBoardStorageKey,
+  getIntegrationStorageKey,
+  leadRepository,
+} from "@/components/sales-kanban/lead-repository";
 import {
   EMPTY_BOARD_STATE,
+  EMPTY_STAGE_INTEGRATIONS,
   KANBAN_STAGES,
   type BoardState,
   type Lead,
   type LeadDraft,
+  type StageIntegrationConfig,
+  type StageIntegrationsState,
   type StageId,
 } from "@/components/sales-kanban/types";
 
 type KanbanContextValue = {
   board: BoardState;
+  integrations: StageIntegrationsState;
   leads: Lead[];
   isHydrated: boolean;
   query: string;
@@ -30,6 +38,7 @@ type KanbanContextValue = {
   createLead: (draft: LeadDraft) => Lead;
   updateLead: (leadId: string, draft: LeadDraft) => void;
   moveLead: (leadId: string, targetStageId: StageId, targetIndex: number) => void;
+  updateStageIntegration: (stageId: StageId, config: StageIntegrationConfig) => void;
   findLead: (leadId: string | null) => Lead | null;
 };
 
@@ -76,10 +85,56 @@ function removeLeadFromBoard(board: BoardState, leadId: string) {
   };
 }
 
+function getStageMeta(stageId: StageId) {
+  return KANBAN_STAGES.find((stage) => stage.id === stageId) ?? null;
+}
+
+async function dispatchStageIntegration(params: {
+  lead: Lead;
+  stageId: StageId;
+  previousStageId?: StageId | null;
+  config: StageIntegrationConfig;
+}) {
+  if (!params.config.enabled || !params.config.webhookUrl || params.config.provider === "none") {
+    return;
+  }
+
+  const currentStage = getStageMeta(params.stageId);
+  const previousStage = params.previousStageId ? getStageMeta(params.previousStageId) : null;
+
+  try {
+    await fetch("/api/integrations/webhook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        provider: params.config.provider,
+        stageId: params.stageId,
+        stageTitle: currentStage?.title ?? params.stageId,
+        previousStageId: params.previousStageId ?? null,
+        previousStageTitle: previousStage?.title ?? null,
+        webhookUrl: params.config.webhookUrl,
+        integrationLabel: params.config.label,
+        event: params.previousStageId ? "lead.stage.entered" : "lead.created",
+        lead: params.lead,
+      }),
+    });
+  } catch (error) {
+    console.error("Falha ao disparar integracao da etapa.", error);
+  }
+}
+
 export function KanbanProvider({ children }: { children: ReactNode }) {
   const { tenantId } = useAuth();
   const storageKey = useMemo(() => getBoardStorageKey(tenantId), [tenantId]);
+  const integrationStorageKey = useMemo(
+    () => getIntegrationStorageKey(tenantId),
+    [tenantId],
+  );
   const [board, setBoard] = useState<BoardState>(EMPTY_BOARD_STATE);
+  const [integrations, setIntegrations] =
+    useState<StageIntegrationsState>(EMPTY_STAGE_INTEGRATIONS);
   const [hydratedKey, setHydratedKey] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const isHydrated = hydratedKey === storageKey;
@@ -87,11 +142,12 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const hydrationTimeout = window.setTimeout(() => {
       setBoard(leadRepository.loadBoard(storageKey));
+      setIntegrations(leadRepository.loadIntegrations(integrationStorageKey));
       setHydratedKey(storageKey);
     }, 0);
 
     return () => window.clearTimeout(hydrationTimeout);
-  }, [storageKey]);
+  }, [integrationStorageKey, storageKey]);
 
   useEffect(() => {
     if (hydratedKey !== storageKey) {
@@ -100,6 +156,14 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
 
     leadRepository.saveBoard(storageKey, board);
   }, [board, hydratedKey, storageKey]);
+
+  useEffect(() => {
+    if (hydratedKey !== storageKey) {
+      return;
+    }
+
+    leadRepository.saveIntegrations(integrationStorageKey, integrations);
+  }, [hydratedKey, integrationStorageKey, integrations, storageKey]);
 
   const createLead = useCallback((draft: LeadDraft) => {
     const now = new Date().toISOString();
@@ -124,8 +188,15 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
       inbox: [lead, ...currentBoard.inbox],
     }));
 
+    void dispatchStageIntegration({
+      lead,
+      stageId: "inbox",
+      previousStageId: null,
+      config: integrations.inbox,
+    });
+
     return lead;
-  }, []);
+  }, [integrations]);
 
   const updateLead = useCallback((leadId: string, draft: LeadDraft) => {
     setBoard((currentBoard) => {
@@ -198,11 +269,28 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
         const safeIndex = Math.max(0, Math.min(targetIndex, targetLeads.length));
         targetLeads.splice(safeIndex, 0, movedLead);
 
+        void dispatchStageIntegration({
+          lead: movedLead,
+          stageId: targetStageId,
+          previousStageId: sourceStageId,
+          config: integrations[targetStageId],
+        });
+
         return {
           ...nextBoard,
           [targetStageId]: targetLeads,
         };
       });
+    },
+    [integrations],
+  );
+
+  const updateStageIntegration = useCallback(
+    (stageId: StageId, config: StageIntegrationConfig) => {
+      setIntegrations((current) => ({
+        ...current,
+        [stageId]: config,
+      }));
     },
     [],
   );
@@ -221,6 +309,7 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
   const value = useMemo<KanbanContextValue>(
     () => ({
       board,
+      integrations,
       leads: getAllLeads(board),
       isHydrated,
       query,
@@ -228,9 +317,20 @@ export function KanbanProvider({ children }: { children: ReactNode }) {
       createLead,
       updateLead,
       moveLead,
+      updateStageIntegration,
       findLead,
     }),
-    [board, createLead, findLead, isHydrated, moveLead, query, updateLead],
+    [
+      board,
+      createLead,
+      findLead,
+      integrations,
+      isHydrated,
+      moveLead,
+      query,
+      updateLead,
+      updateStageIntegration,
+    ],
   );
 
   return <KanbanContext.Provider value={value}>{children}</KanbanContext.Provider>;

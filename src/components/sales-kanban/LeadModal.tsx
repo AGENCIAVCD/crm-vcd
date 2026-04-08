@@ -141,16 +141,16 @@ export function LeadModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto border-black/8 bg-white text-[#111111] shadow-[0_24px_80px_-44px_rgba(0,0,0,0.24)]">
+      <DialogContent className="max-h-[92vh] overflow-y-auto border-[#2a2a2a] bg-[#171717] text-white shadow-[0_28px_80px_-40px_rgba(0,0,0,0.55)]">
         <DialogHeader>
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-black/8 bg-[#fafafa] px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#2a2a2a] bg-[#1d1d1d] px-3 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
             {mode === "details" ? <FileText className="size-3.5" /> : <PlusCircle className="size-3.5" />}
             {mode === "details" ? "Dossiê do lead" : "Novo lead"}
           </div>
-          <DialogTitle className="ds-ui-title text-[1rem] text-[#111111]">
+          <DialogTitle className="ds-ui-title text-[1rem] text-white">
             {mode === "details" ? lead?.company ?? "Dossiê" : "Cadastrar oportunidade manual"}
           </DialogTitle>
-          <DialogDescription className="text-[0.8125rem] leading-5 text-[#6b7280]">
+          <DialogDescription className="text-[0.8125rem] leading-5 text-[#a3a3a3]">
             {mode === "details"
               ? "Atualize dados comerciais, origem, serviço e notas sem sair do fluxo Kanban."
               : "O lead entra automaticamente na Inbox e fica salvo no LocalStorage desta sessão."}
@@ -160,73 +160,73 @@ export function LeadModal({
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 Nome do cliente *
               </span>
               <input
                 value={draft.clientName}
                 onChange={(event) => updateDraft("clientName", event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="Ex.: Mariana Costa"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 Empresa *
               </span>
               <input
                 value={draft.company}
                 onChange={(event) => updateDraft("company", event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="Ex.: Clínica Aurora"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 WhatsApp *
               </span>
               <input
                 value={draft.whatsapp}
                 onChange={(event) => handleWhatsappChange(event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="(11) 99999-9999"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 E-mail
               </span>
               <input
                 value={draft.email}
                 onChange={(event) => updateDraft("email", event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="contato@empresa.com"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 Origem / UTM
               </span>
               <input
                 value={draft.origin}
                 onChange={(event) => updateDraft("origin", event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="utm_campaign=google_pesquisa"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 Serviço
               </span>
               <select
                 value={draft.service}
                 onChange={(event) => updateDraft("service", event.target.value as ServiceType)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
               >
                 {SERVICE_TYPES.map((service) => (
                   <option key={service} value={service}>
@@ -237,7 +237,7 @@ export function LeadModal({
             </label>
 
             <label className="space-y-2 md:col-span-2">
-              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
                 Valor estimado
               </span>
               <input
@@ -246,26 +246,26 @@ export function LeadModal({
                 step="0.01"
                 value={draft.estimatedValue}
                 onChange={(event) => updateDraft("estimatedValue", event.target.value)}
-                className="rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.8125rem] font-normal text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+                className="rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.8125rem] font-normal text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
                 placeholder="3500"
               />
             </label>
           </div>
 
           <label className="block space-y-2">
-            <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#6b7280]">
+            <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#ffcf5c]">
               Notas do dossiê
             </span>
             <textarea
               value={draft.notes}
               onChange={(event) => updateDraft("notes", event.target.value)}
-              className="min-h-[140px] rounded-[12px] border border-black/8 bg-[#fafafa] px-3.5 py-3 text-[0.8125rem] leading-6 text-black outline-none transition placeholder:text-[#9ca3af] focus:border-black/18 focus:bg-white focus:ring-3 focus:ring-black/5"
+              className="min-h-[140px] rounded-[12px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-3 text-[0.8125rem] leading-6 text-white outline-none transition placeholder:text-[#8c8c8c] focus:border-[#ffb500]/60 focus:bg-[#222222] focus:ring-3 focus:ring-[#ffb500]/10"
               placeholder="Resumo da conversa, objeções, urgência, próximos passos..."
             />
           </label>
 
           {feedback ? (
-            <div className="rounded-[12px] border border-[#f2ddb0] bg-[#fff8e1] px-3.5 py-3 text-[0.8125rem] font-medium text-[#8a6a00]">
+            <div className="rounded-[12px] border border-[#473810] bg-[#2b2411] px-3.5 py-3 text-[0.8125rem] font-medium text-[#ffcf5c]">
               {feedback}
             </div>
           ) : null}
@@ -274,14 +274,14 @@ export function LeadModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="rounded-[10px] border border-black/8 bg-[#fafafa] px-3.5 py-2.5 text-[0.75rem] font-medium text-[#4b5563] transition hover:border-black/16 hover:bg-white hover:text-[#111111]"
+              className="rounded-[10px] border border-[#2a2a2a] bg-[#1d1d1d] px-3.5 py-2.5 text-[0.75rem] font-medium text-white transition hover:border-[#ffb500]/50 hover:bg-[#252525] hover:text-[#ffcf5c]"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#111111] px-3.5 py-2.5 text-[0.75rem] font-medium text-white transition hover:bg-[#222222] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#ffb500] px-3.5 py-2.5 text-[0.75rem] font-medium text-black transition hover:bg-[#e2a000] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSaving ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
               {mode === "details" ? "Salvar dossiê" : "Criar lead"}

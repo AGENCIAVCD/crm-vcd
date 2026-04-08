@@ -12,12 +12,12 @@ type LeadCardProps = {
 };
 
 const serviceToneMap: Record<ServiceType, string> = {
-  "Google Ads": "bg-[#fff8e1] text-[#8a6a00] border-[#f2ddb0]",
-  SEO: "bg-[#f5f5f5] text-[#374151] border-[#e5e7eb]",
-  "Social Media": "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
-  "Landing Page": "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
-  "Tráfego + CRM": "bg-[#f5f5f5] text-[#111111] border-[#e5e7eb]",
-  Consultoria: "bg-[#f9fafb] text-[#4b5563] border-[#e5e7eb]",
+  "Google Ads": "bg-[#2b2411] text-[#ffcf5c] border-[#473810]",
+  SEO: "bg-[#202020] text-white border-[#2f2f2f]",
+  "Social Media": "bg-[#202020] text-white border-[#2f2f2f]",
+  "Landing Page": "bg-[#202020] text-white border-[#2f2f2f]",
+  "Tráfego + CRM": "bg-[#2b2411] text-[#ffcf5c] border-[#473810]",
+  Consultoria: "bg-[#202020] text-white border-[#2f2f2f]",
 };
 
 function getStageAge(enteredStageAt: string) {
@@ -91,7 +91,7 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         transition,
       }}
       className={cn(
-        "group rounded-[14px] border border-black/8 bg-white p-3 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.18)] transition duration-200 hover:border-black/12 hover:shadow-[0_10px_28px_-24px_rgba(0,0,0,0.24)]",
+        "group rounded-[14px] border border-[#2a2a2a] bg-[#171717] p-3 shadow-[0_12px_30px_-24px_rgba(0,0,0,0.38)] transition duration-200 hover:border-[#3a3a3a] hover:shadow-[0_14px_34px_-22px_rgba(0,0,0,0.45)]",
         getAlertClass(stageAge.days),
         isDragging && "rotate-[0.8deg] opacity-85 shadow-[0_16px_40px_-26px_rgba(0,0,0,0.28)]",
       )}
@@ -102,10 +102,10 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
           onClick={() => onOpenDossier(lead.id)}
           className="min-w-0 flex-1 text-left"
         >
-          <p className="ds-ui-title line-clamp-2 break-words text-[0.8125rem] leading-[1.3] text-[#111111]">
+          <p className="ds-ui-title line-clamp-2 break-words text-[0.8125rem] leading-[1.3] text-white">
             {lead.company}
           </p>
-          <p className="mt-0.5 line-clamp-1 text-[0.6875rem] leading-4 text-[#6b7280]">
+          <p className="mt-0.5 line-clamp-1 text-[0.6875rem] leading-4 text-[#a3a3a3]">
             {lead.clientName}
           </p>
         </button>
@@ -113,7 +113,7 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         <button
           type="button"
           aria-label={`Arrastar ${lead.company}`}
-          className="rounded-[10px] border border-black/8 bg-[#fafafa] p-1.5 text-[#6b7280] transition hover:border-black/14 hover:bg-[#f3f4f6] hover:text-[#111111]"
+          className="rounded-[10px] border border-[#2a2a2a] bg-[#1d1d1d] p-1.5 text-[#a3a3a3] transition hover:border-[#3a3a3a] hover:bg-[#252525] hover:text-white"
           {...attributes}
           {...listeners}
         >
@@ -130,21 +130,21 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         >
           {lead.service}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-[#f9fafb] px-2 py-1 text-[9px] font-medium tracking-[0.04em] text-[#6b7280]">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#1f1f1f] px-2 py-1 text-[9px] font-medium tracking-[0.04em] text-[#d6d6d6]">
           <Clock3 className="size-2.5" />
           {stageAge.label}
         </span>
       </div>
 
-      <div className="mt-2.5 grid gap-1.5 text-[0.6875rem] leading-4 text-[#6b7280]">
+      <div className="mt-2.5 grid gap-1.5 text-[0.6875rem] leading-4 text-[#a3a3a3]">
         <p className="flex items-center justify-between gap-3">
           <span className="font-normal">Contrato estimado</span>
-          <strong className="text-[0.8125rem] font-medium text-[#111111]">
+          <strong className="text-[0.8125rem] font-medium text-white">
             {formatCurrency(lead.estimatedValue)}
           </strong>
         </p>
         <p className="flex items-center gap-2">
-          <RadioTower className="size-3 shrink-0 text-[#6b7280]" />
+          <RadioTower className="size-3 shrink-0 text-[#ffcf5c]" />
           <span className="line-clamp-1 break-all">{lead.origin || "Origem não informada"}</span>
         </p>
       </div>
@@ -158,8 +158,8 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
           className={cn(
             "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[10px] border px-2.5 py-2 text-[10px] font-medium transition",
             whatsappUrl
-              ? "border-[#e5e7eb] bg-[#fafafa] text-[#4b5563] hover:border-black/14 hover:text-[#111111]"
-              : "pointer-events-none border-[#e5e7eb] bg-[#fafafa] text-[#9ca3af]",
+              ? "border-[#2a2a2a] bg-[#1d1d1d] text-white hover:border-[#ffb500]/50 hover:text-[#ffcf5c]"
+              : "pointer-events-none border-[#2a2a2a] bg-[#1d1d1d] text-[#6f6f6f]",
           )}
         >
           <MessageCircle className="size-3.5" />
@@ -168,7 +168,7 @@ export function LeadCard({ lead, onOpenDossier }: LeadCardProps) {
         <button
           type="button"
           onClick={() => onOpenDossier(lead.id)}
-          className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[10px] border border-black/8 bg-[#111111] px-2.5 py-2 text-[10px] font-medium text-white transition hover:bg-[#222222]"
+          className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[10px] border border-[#ffb500] bg-[#ffb500] px-2.5 py-2 text-[10px] font-medium text-black transition hover:bg-[#e2a000]"
         >
           <FileText className="size-3.5" />
           Dossiê
